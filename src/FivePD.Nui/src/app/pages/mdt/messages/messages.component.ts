@@ -56,12 +56,12 @@ export class MessagesComponent {
   onMessageClick(message: Message): void {
     this.selectedMessage = message;
 
-    if (message.Read) {
+    if (message.HasRead) {
       return;
     }
 
     this._messageService.read(message.Id).subscribe(() => {
-      message.Read = true;
+      message.HasRead = true;
     });
   }
 

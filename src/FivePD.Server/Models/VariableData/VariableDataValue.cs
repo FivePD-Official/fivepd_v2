@@ -1,11 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace FivePD.Server.Models.VariableData;
+﻿namespace FivePD.Server.Models.VariableData;
 
 /// <summary>
 /// Represents an entity's attribute value.
 /// </summary>
-[Table("fivepd_variable_data_values")]
 public class VariableDataValue
 {
     /// <summary>
@@ -14,9 +11,19 @@ public class VariableDataValue
     public int Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the attribute associated with this value.
+    /// </summary>
+    public int AttributeId { get; set; }
+
+    /// <summary>
     /// Gets or sets the attribute which this value belongs to.
     /// </summary>
     public VariableDataAttribute Attribute { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the entity associated with this value.
+    /// </summary>
+    public string EntityId { get; set; }
 
     /// <summary>
     /// Gets or sets the entity which this value belongs to.

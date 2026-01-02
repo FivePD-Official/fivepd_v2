@@ -6,7 +6,7 @@ using FivePD.Server.Models.VariableData.Sets;
 namespace FivePD.Server.Services.VariableData;
 
 /// <inheritdoc />
-public class PedWarningService : VariableDataRepository<PedWarningSet>
+public class PedWarningService : VariableDataBaseService<PedWarningSet>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="PedWarningService"/> class.

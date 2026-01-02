@@ -1,11 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace FivePD.Server.Models;
+﻿namespace FivePD.Server.Models;
 
 /// <summary>
 /// Many-to-Many joining table for Department and Rank.
 /// </summary>
-[Table("fivepd_department_rank")]
 public class DepartmentRank
 {
     /// <summary>
@@ -21,10 +18,10 @@ public class DepartmentRank
     /// <summary>
     /// Gets or sets the department.
     /// </summary>
-    public virtual Department Department { get; set; }
+    public Department Department { get; set; }
 
     /// <summary>
     /// Gets or sets the rank.
     /// </summary>
-    public virtual Rank Rank { get; set; }
+    public Rank Rank { get; set; }
 }

@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FivePD.Server.Models;
 
 /// <summary>
 /// Used to get/set vehicle configuration.
 /// </summary>
-/// <typeparam name="TOptions">The type of the Options field..</typeparam>
-[Table("fivepd_vehicle_configs")]
+/// <typeparam name="TOptions">The type of the Options field.</typeparam>
 public class VehicleConfig<TOptions>
 {
     /// <summary>
@@ -38,7 +36,7 @@ public class VehicleConfig<TOptions>
     /// <summary>
     /// Gets or sets the extras.
     /// </summary>
-    public IList<int> Extras { get; set; }
+    public List<int> Extras { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the options by type.

@@ -39,7 +39,7 @@ public class Unit
         this._players.Add(player);
 
         this.Callsign = callsign;
-        this.DepartmentId = player.Department?.Id ?? 0;
+        this.DepartmentId = player.Department()?.Id ?? 0;
 
         this.Availability.Subscribe(this.ListenForAvailabilityChanges);
         this.Status.Subscribe(this.ListenForStatusChanges);
@@ -57,7 +57,7 @@ public class Unit
     public Unit(string callsign, IEnumerable<FPlayer> players)
     {
         var playersWithDepartment = players
-            .Select(x => new Tuple<FPlayer, Department>(x, x.Department))
+            .Select(x => new Tuple<FPlayer, Department>(x, x.Department()))
             .Where(x => x.Item2 is not null)
             .ToList();
         var firstPlayerDepartment = playersWithDepartment.First().Item2;

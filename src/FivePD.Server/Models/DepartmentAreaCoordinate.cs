@@ -1,17 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace FivePD.Server.Models;
+﻿namespace FivePD.Server.Models;
 
 /// <summary>
 /// Represents the 'department_area_coordinates' table.
 /// </summary>
-[Table("fivepd_department_area_coordinates")]
 public class DepartmentAreaCoordinate
 {
     /// <summary>
     /// Gets or sets the identifier.
     /// </summary>
     public int Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the department identifier.
+    /// </summary>
+    public int? DepartmentId { get; set; }
 
     /// <summary>
     /// Gets or sets the department.

@@ -9,9 +9,12 @@ using FivePD.Common.Models;
 using FivePD.Server.EntityWrappers.PedWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
+using FivePD.Server.Repositories;
 using FivePD.Server.UIModels.MenuModels;
 
 namespace FivePD.Server.EntityWrappers;
+
+#pragma warning disable
 
 /// <summary>
 /// The base player class.
@@ -47,12 +50,17 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// Gets the player's unit.
     /// </summary>
     /// <returns>A unit.</returns>
-    public Department Department => ServiceLocator.GetService<IDepartmentService>().GetPlayerDepartment(this);
+    public Department Department()
+    {
+        var userRepository = ServiceLocator.GetService<UserRepository>();
+        return userRepository.GetDepartment(userRepository.FindByLicense(this.GetUnderlyingPlayer()));
+    }
 
     /// <summary>
     /// Gets a value indicating whether the player is in a department.
     /// </summary>
-    public bool IsInDepartment => this.Department is not null;
+    /// <returns>Whether the player is in a department.</returns>
+    public bool IsInDepartment() => this.Department() is not null;
 
     /// <summary>
     /// Gets the player's unit.

@@ -132,7 +132,6 @@ export class DepartmentsViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.getGeneralConfig();
-    this.getDepartment();
   }
 
   tryEditMemberCallsignFormat(): void {
@@ -333,7 +332,7 @@ export class DepartmentsViewComponent implements OnInit {
                 title: 'Edit callsign',
               }, new Map()
                 .set(CALLSIGN_FORMAT_ITEMS, this.department?.CallsignFormat)
-                .set(CALLSIGN_FORMAT_VALUES, user.CallsignFormat.Values)
+                .set(CALLSIGN_FORMAT_VALUES, user.CallsignFormat.FormatValues)
             ).result
               .pipe(
                 filter((res) => res.success),
@@ -495,19 +494,26 @@ export class DepartmentsViewComponent implements OnInit {
 
   getDepartment(): void {
     const Id = this._route.snapshot.params['id'];
-    if (Id === null || Id === undefined) return;
     this._departmentService.getDepartment(Id).subscribe(res => {
       this.department = res;
+      this.createDepartmentSettingsForm();
       this.getRanks();
       this.getDivisions();
       this.getUsers();
       this.setIsUserInDepartment();
-      this.createDepartmentSettingsForm();
     });
   }
 
   getRanks(remapUsers: boolean = false): void {
     if (!this.department) {
+      return;
+    }
+
+    if (this.department.UseGlobalRanks) {
+      this._rankService.getAllGlobal().subscribe(res => {
+        this.globalRanks = res;
+        this.createDepartmentSettingsForm();
+      });
       return;
     }
 
@@ -523,8 +529,6 @@ export class DepartmentsViewComponent implements OnInit {
         this.getDepartment();
       }
     });
-
-    this._rankService.getAllGlobal().subscribe(res => this.globalRanks = res);
   }
 
   getDivisions(remapUsers: boolean = false): void {

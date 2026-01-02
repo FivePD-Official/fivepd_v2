@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FivePD.Server.Models.VariableData;
 
 /// <summary>
 /// Represents a dynamic data set.
 /// </summary>
-[Table("fivepd_variable_data_sets")]
 public class VariableDataSet
 {
     /// <summary>
@@ -17,10 +15,10 @@ public class VariableDataSet
     /// <summary>
     /// Gets or sets the entities of this set.
     /// </summary>
-    public IList<VariableDataEntity> Entities { get; set; }
+    public List<VariableDataEntity> Entities { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the attributes of this set.
     /// </summary>
-    public IList<VariableDataAttribute> Attributes { get; set; }
+    public List<VariableDataAttribute> Attributes { get; set; } = new();
 }

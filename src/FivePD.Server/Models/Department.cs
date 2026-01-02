@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Server.Models.DTO;
 
 namespace FivePD.Server.Models;
@@ -7,7 +6,6 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents the 'departments' table.
 /// </summary>
-[Table("fivepd_departments")]
 public class Department
 {
     /// <summary>
@@ -33,7 +31,7 @@ public class Department
     /// <summary>
     /// Gets or sets the callsign format.
     /// </summary>
-    public List<CallsignFormatItem> CallsignFormat { get; set; }
+    public List<CallsignFormatItem> CallsignFormat { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the maximum number of users.
@@ -54,34 +52,25 @@ public class Department
     /// <summary>
     /// Gets or sets the users of this department.
     /// </summary>
-    public IList<User> Users { get; set; }
+    public List<User> Users { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the divisions of this department.
     /// </summary>
-    public IList<Division> Divisions { get; set; }
+    public List<Division> Divisions { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the callout details of this department.
     /// </summary>
-    public IList<CalloutDetailsDepartment> CalloutDetailsDepartments { get; set; }
+    public List<CalloutDetailsDepartment> CalloutDetailsDepartments { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the area coordinates of this department.
     /// </summary>
-    public IList<DepartmentAreaCoordinate> AreaCoordinates { get; set; }
+    public List<DepartmentAreaCoordinate> AreaCoordinates { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the DepartmentRanks.
     /// </summary>
-    public IList<DepartmentRank> DepartmentRanks { get; set; }
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="DepartmentResponse"/>.
-    /// </summary>
-    /// <returns>The created response object.</returns>
-    internal DepartmentResponse ToResponse()
-    {
-        return new DepartmentResponse(this);
-    }
+    public List<DepartmentRank> DepartmentRanks { get; set; } = new();
 }

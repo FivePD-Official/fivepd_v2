@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Server.Utilities;
 
 namespace FivePD.Server.Models;
@@ -7,7 +6,6 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents a vehicle document.
 /// </summary>
-[Table("fivepd_vehicle_documents")]
 public class VehicleDocument
 {
     /// <summary>

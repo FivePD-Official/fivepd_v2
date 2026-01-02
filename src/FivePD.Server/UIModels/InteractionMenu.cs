@@ -14,7 +14,6 @@ using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.UIModels.MenuModels;
-using Microsoft.Extensions.Primitives;
 using Cfx = CitizenFX.Core.Native;
 
 namespace FivePD.Server.UIModels;
@@ -84,7 +83,7 @@ public sealed class InteractionMenu : Menu
             return false;
         }
 
-        if (config.MustBeInDepartment && !player.IsInDepartment)
+        if (config.MustBeInDepartment && !player.IsInDepartment())
         {
             this._gameNotificationService.Notify(
                 player,

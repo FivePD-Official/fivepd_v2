@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Server.Utilities;
 
 namespace FivePD.Server.Models;
@@ -7,13 +6,17 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents a license.
 /// </summary>
-[Table("fivepd_ped_licenses")]
 public class PedLicense
 {
     /// <summary>
     /// Gets or sets the identifier.
     /// </summary>
     public string Id { get; set; } = IdGenerator.Generate();
+
+    /// <summary>
+    /// Gets or sets the identifier of the owner ped history.
+    /// </summary>
+    public int? PedDataId { get; set; }
 
     /// <summary>
     /// Gets or sets the entity which this value belongs to.

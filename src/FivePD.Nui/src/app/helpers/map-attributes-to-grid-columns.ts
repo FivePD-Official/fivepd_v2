@@ -9,7 +9,7 @@ export function mapAttributesToGridColumns(attributes: VariableDataAttribute[], 
   const attributesWithoutOrder = [];
   const attributesWithOrder = [];
   for (const attr of attributes.filter(attr => attr.ShowInGrid)) {
-    if (attr.Order) {
+    if (attr.DisplayOrder) {
       attributesWithOrder.push(attr)
     } else {
       attributesWithoutOrder.push(attr);
@@ -18,9 +18,9 @@ export function mapAttributesToGridColumns(attributes: VariableDataAttribute[], 
 
   const columns: Column<MappedVariableDataEntity>[] = attributesWithOrder
     .sort((a,b) => {
-      if (!a.Order || !b.Order) return -1;
-      if (a.Order < b.Order) return -1;
-      if (a.Order > b.Order) return 1;
+      if (!a.DisplayOrder || !b.DisplayOrder) return -1;
+      if (a.DisplayOrder < b.DisplayOrder) return -1;
+      if (a.DisplayOrder > b.DisplayOrder) return 1;
       return 0;
     })
     .map(attr => {

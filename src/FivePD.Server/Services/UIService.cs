@@ -64,7 +64,7 @@ public class UIService : IUIService, IOnInit
             if (obj is null)
             {
                 throw new ArgumentException(
-                    $"Can't register event method '{attribute.Event}'. Make sure that its declaring type has an interface and has been registered as a service.");
+                $"Can't register event method '{attribute.Event}'. Make sure that its declaring type has an interface and has been registered as a service.");
             }
 
             this._eventHandlerDictionary.Add(

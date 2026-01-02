@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Dynamic;
 using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Common.Builders;
 using FivePD.Common.Enums;
 using FivePD.Server.Attributes;
-using FivePD.Server.Database;
 using FivePD.Server.EntityWrappers.PedWrapper;
-using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Requests;
-using FivePD.Server.QueryHelpers;
-using Microsoft.EntityFrameworkCore;
+using FivePD.Server.Repositories;
 using Newtonsoft.Json;
 using Cfx = CitizenFX.Core.Native;
 
@@ -29,11 +25,12 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     private readonly IVehicleStorageService _vehicleStorageService;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IConfigService _configService;
-    private readonly IDatabaseContextFactory _dbContextFactory;
     private readonly IRandomService _randomService;
     private readonly ITickQueueService _tickQueueService;
     private readonly INetworkEventService _networkEventService;
     private readonly IPedBehaviorService _pedBehaviorService;
+    private readonly PedDataRepository _pedDataRepository;
+    private readonly VehicleDataRepository _vehicleDataRepository;
 
     private Guid _checkPedsId;
 
@@ -44,31 +41,34 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     /// <param name="vehicleStorageService">The <see cref="IVehicleStorageService" /> to use.</param>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary" /> to use.</param>
     /// <param name="configService">The <see cref="IConfigService" /> to use.</param>
-    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory" /> to use.</param>
     /// <param name="randomService">The <see cref="IRandomService" /> to use.</param>
     /// <param name="tickQueueService">The <see cref="ITickQueueService" /> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService" /> to use.</param>
     /// <param name="pedBehaviorService">The <see cref="IPedBehaviorService" /> to use.</param>
+    /// <param name="pedDataRepository">The <see cref="PedDataRepository" /> to use.</param>
+    /// <param name="vehicleDataRepository">The <see cref="VehicleDataRepository" /> to use.</param>
     public PedService(
         IPedStorageService pedStorageService,
         IVehicleStorageService vehicleStorageService,
         EventHandlerDictionary eventHandlerDictionary,
         IConfigService configService,
-        IDatabaseContextFactory dbContextFactory,
         IRandomService randomService,
         ITickQueueService tickQueueService,
         INetworkEventService networkEventService,
-        IPedBehaviorService pedBehaviorService)
+        IPedBehaviorService pedBehaviorService,
+        PedDataRepository pedDataRepository,
+        VehicleDataRepository vehicleDataRepository)
     {
         this._pedStorageService = (IInternalPedStorageService)pedStorageService;
         this._vehicleStorageService = vehicleStorageService;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._configService = configService;
-        this._dbContextFactory = dbContextFactory;
         this._randomService = randomService;
         this._tickQueueService = tickQueueService;
         this._networkEventService = networkEventService;
         this._pedBehaviorService = pedBehaviorService;
+        this._pedDataRepository = pedDataRepository;
+        this._vehicleDataRepository = vehicleDataRepository;
     }
 
     /// <inheritdoc/>
@@ -102,7 +102,6 @@ public class PedService : IPedService, IOnInit, IOnDestroy
 
     private void GeneratePed(string serializedFPedBuilder)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var commonFPedBuilder = JsonConvert.DeserializeObject<CommonFPedBuilder>(serializedFPedBuilder);
         if (commonFPedBuilder is null || this._pedStorageService.InternalPeds.ContainsKey(commonFPedBuilder.NetworkId))
         {
@@ -114,16 +113,13 @@ public class PedService : IPedService, IOnInit, IOnDestroy
         var owningFVehicle = this._vehicleStorageService.TryGetVehicle(commonFPedBuilder.OwningVehicleNetworkId);
         var vehicleData = owningFVehicle is null
             ? null
-            : databaseContext.VehicleData.FirstOrDefault(x => x.Id == owningFVehicle.VehicleDataId);
+            : this._vehicleDataRepository.FindById(owningFVehicle.VehicleDataId);
 
         FPed fPed = null;
         if (this._configService.GeneralConfig.Peds.ChanceToReuseData != 0 &&
             this._randomService.GetRandomChance <= this._configService.GeneralConfig.Peds.ChanceToReuseData)
         {
-            var pedData = databaseContext.PedData
-                .OrderBy(_ => Guid.NewGuid())
-                .Include(pedHistory => pedHistory.Licenses)
-                .FirstOrDefault(ped => ped.Gender == commonFPedBuilder.Gender);
+            var pedData = this._pedDataRepository.GetRandomWithMatchingGender(commonFPedBuilder.Gender);
             if (pedData is not null)
             {
                 fPed = fPedBuilder
@@ -145,8 +141,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
 
                 if (vehicleData is not null)
                 {
-                    vehicleData.PedDataId = pedData.Id;
-                    databaseContext.SaveChanges();
+                    this._vehicleDataRepository.Update(vehicleData, x => { x.PedDataId = pedData.Id; });
                 }
             }
         }
@@ -169,7 +164,7 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 .WithRandomLicenses(this._configService.GeneralConfig.Peds.Licenses)
                 .WithAlcoholLevel(this._configService.GeneralConfig.Peds.Alcohol)
                 .WithDrugs(this._configService.GeneralConfig.Peds.Drugs);
-            var entry = databaseContext.PedData.Add(new PedData
+            var pedData = this._pedDataRepository.Add(new PedData
             {
                 Firstname = fPedBuilder.Firstname,
                 Lastname = fPedBuilder.Lastname,
@@ -177,24 +172,25 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 Gender = fPedBuilder.Gender,
                 Items = fPedBuilder.Items,
                 Warrants = fPedBuilder.Warrants,
-                Licenses = fPedBuilder.Licenses,
                 AlcoholLevel = fPedBuilder.AlcoholLevel,
                 Drugs = fPedBuilder.Drugs,
-                VehicleDataId = vehicleData?.Id,
             });
-            databaseContext.SaveChanges();
+
+            foreach (var license in fPedBuilder.Licenses)
+            {
+                this._pedDataRepository.AddLicense(pedData, license);
+            }
 
             if (vehicleData is not null)
             {
-                vehicleData.PedDataId = entry.Entity.Id;
-                databaseContext.SaveChanges();
+                this._vehicleDataRepository.Update(vehicleData, x => { x.PedDataId = pedData.Id; });
             }
 
             fPed = fPedBuilder
-                .WithPedData(entry.Entity)
+                .WithPedData(pedData)
                 .Build();
 
-            fPed.PedDataId = entry.Entity.Id;
+            fPed.PedDataId = pedData.Id;
         }
 
         Debug.WriteLine($"Generated data for ped with net ID of {fPed.NetworkId} - Name: {fPedBuilder.Firstname} {fPedBuilder.Lastname}");
@@ -206,46 +202,31 @@ public class PedService : IPedService, IOnInit, IOnDestroy
     [UIEvent(Events.PedHistory.GetAllPageable)]
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<PedHistoryGetAllRequest>(serializedRequest);
-
-        var filters = new Filters<PedData>();
-        filters.Add(
-            !string.IsNullOrEmpty(request.Filters.Firstname),
-            pedHistory => pedHistory.Firstname.ToLower().Contains(request.Filters.Firstname.ToLower()));
-        filters.Add(
-            !string.IsNullOrEmpty(request.Filters.Lastname),
-            pedHistory => pedHistory.Lastname.ToLower().Contains(request.Filters.Lastname.ToLower()));
-        filters.Add(
-            request.Filters.Gender != -1,
-            pedHistory => pedHistory.Gender == (FGender)request.Filters.Gender);
-
-        var page = databaseContext.PedData
-            .AsNoTracking()
-            .Paginate(request.Page, filters);
-
+        var page = this._pedDataRepository.Paginate(
+            request.Page,
+            b => b
+                .If(!string.IsNullOrEmpty(request.Filters.Firstname), x => x.WhereContains("Firstname", request.Filters.Firstname))
+                .If(!string.IsNullOrEmpty(request.Filters.Lastname), x => x.WhereContains("Lastname", request.Filters.Lastname))
+                .If(request.Filters.Gender != -1, x => x.WhereEquals("Gender", request.Filters.Gender)));
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.PedHistory.Get)]
     private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var pedData = databaseContext.PedData
-            .AsNoTracking()
-            .Include(x => x.VehicleData)
-            .Include(x => x.Licenses)
-            .FirstOrDefault(x => x.Id == request.Id);
+        var pedData = this._pedDataRepository.FindByIdWithDynamicRelated(
+            request.Id,
+            new PedDataRepository.PedDataLoadOptions { IncludeLicenses = true, IncludeVehicleData = true });
         this._networkEventService.TriggerEventSerialized(player, guid, pedData);
     }
 
     [UIEvent(Events.PedHistory.GetAllSimple)]
     private void GetAllSimpleUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var simplePedHistories = databaseContext.PedData
-            .AsNoTracking()
+        var simplePedHistories = this._pedDataRepository
+            .GetAll()
             .Select(x => new SimplePedHistoryDTO
             {
                 Id = x.Id,
@@ -255,7 +236,6 @@ public class PedService : IPedService, IOnInit, IOnDestroy
                 Firstname = x.Firstname,
             })
             .ToList();
-
         this._networkEventService.TriggerEventSerialized(player, guid, simplePedHistories);
     }
 }

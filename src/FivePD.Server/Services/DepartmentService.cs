@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CitizenFX.Core;
+using Dapper;
 using FivePD.Common;
 using FivePD.Common.Extensions;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
-using FivePD.Server.EntityWrappers;
-using FivePD.Server.Exceptions;
+using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
 using FivePD.Server.Models.Events;
 using FivePD.Server.Models.Requests;
-using FivePD.Server.QueryHelpers;
+using FivePD.Server.Repositories;
 using FivePD.Server.Utilities;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
@@ -25,28 +24,48 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class DepartmentService : IDepartmentService
 {
-    private readonly IDatabaseContextFactory _dbContextFactory;
+    private readonly DepartmentRepository _departmentRepository;
+    private readonly UserRepository _userRepository;
+    private readonly DivisionRepository _divisionRepository;
+    private readonly RankRepository _rankRepository;
+    private readonly DepartmentAreaCoordinateRepository _departmentAreaCoordinateRepository;
     private readonly IPlayerDataService _playerDataService;
     private readonly IPlayerHandlerService _playerHandlerService;
     private readonly INetworkEventService _networkEventService;
+    private readonly IDatabaseConnectionFactory _dbConnectionFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DepartmentService"/> class.
     /// </summary>
-    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
+    /// <param name="departmentRepository">The <see cref="DepartmentRepository"/> to use.</param>
+    /// <param name="userRepository">The <see cref="UserRepository"/> to use.</param>
+    /// <param name="divisionRepository">The <see cref="DivisionRepository"/> to use.</param>
+    /// <param name="rankRepository">The <see cref="RankRepository"/> to use.</param>
+    /// <param name="departmentAreaCoordinateRepository">The <see cref="DepartmentAreaCoordinateRepository"/> to use.</param>
     /// <param name="playerDataService">The <see cref="PlayerDataService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="PlayerHandlerService"/> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
+    /// <param name="dbConnectionFactory">The <see cref="IDatabaseConnectionFactory"/> to use.</param>
     public DepartmentService(
-        IDatabaseContextFactory dbContextFactory,
+        DepartmentRepository departmentRepository,
+        UserRepository userRepository,
+        DivisionRepository divisionRepository,
+        RankRepository rankRepository,
+        DepartmentAreaCoordinateRepository departmentAreaCoordinateRepository,
         IPlayerDataService playerDataService,
         IPlayerHandlerService playerHandlerService,
-        INetworkEventService networkEventService)
+        INetworkEventService networkEventService,
+        IDatabaseConnectionFactory dbConnectionFactory)
     {
-        this._dbContextFactory = dbContextFactory;
+        this._departmentRepository = departmentRepository;
+        this._userRepository = userRepository;
+        this._divisionRepository = divisionRepository;
+        this._rankRepository = rankRepository;
+        this._departmentAreaCoordinateRepository = departmentAreaCoordinateRepository;
         this._playerDataService = playerDataService;
         this._playerHandlerService = playerHandlerService;
         this._networkEventService = networkEventService;
+        this._dbConnectionFactory = dbConnectionFactory;
     }
 
     /// <inheritdoc />
@@ -73,266 +92,11 @@ public class DepartmentService : IDepartmentService
     /// <inheritdoc />
     public event EventHandler<Division> DivisionDeleted;
 
-    /// <inheritdoc />
-    public Department CreateDepartment(Department department)
-    {
-        if (department is null)
-        {
-            throw new ArgumentException("The provided department is null");
-        }
-
-        if (string.IsNullOrEmpty(department.Name))
-        {
-            throw new ArgumentException("The name of the department can't be null or empty");
-        }
-
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var departmentExists = databaseContext.Departments.FirstOrDefault(d => d.Name == department.Name && d.Id != department.Id);
-        if (departmentExists is not null)
-        {
-            throw new DepartmentExistsWithNameException();
-        }
-
-        if (string.IsNullOrEmpty(department.Callsign))
-        {
-            department.Callsign = department.Name.ToAcronym();
-        }
-
-        var createdDepartmentEntry = databaseContext.Departments.Add(department);
-        databaseContext.SaveChanges();
-        this.DepartmentCreated?.Invoke(this, createdDepartmentEntry.Entity);
-        return createdDepartmentEntry.Entity;
-    }
-
-    /// <inheritdoc />
-    public Department UpdateDepartment(Department department)
-    {
-        if (department is null)
-        {
-            throw new ArgumentException("The provided department is null");
-        }
-
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var departmentEntity = databaseContext.Departments.FirstOrDefault(d => d.Name == department.Name);
-        if (departmentEntity is null)
-        {
-            throw new ArgumentException("The provided department does not exist");
-        }
-
-        if (string.IsNullOrEmpty(department.Name))
-        {
-            throw new ArgumentException("The name of the department can't be null or empty");
-        }
-
-        var departmentExists = databaseContext.Departments.FirstOrDefault(d => d.Name == department.Name && d.Id != department.Id);
-        if (departmentExists is not null)
-        {
-            throw new DepartmentExistsWithNameException();
-        }
-
-        departmentEntity.Name = department.Name;
-        departmentEntity.DepartmentRanks = department.DepartmentRanks;
-        departmentEntity.Divisions = department.Divisions;
-        departmentEntity.Callsign = department.Callsign;
-        departmentEntity.CalloutDetailsDepartments = department.CalloutDetailsDepartments;
-        departmentEntity.AreaCoordinates = department.AreaCoordinates;
-        departmentEntity.Users = department.Users;
-        departmentEntity.CallsignFormat = department.CallsignFormat;
-        departmentEntity.DefaultRank = department.DefaultRank;
-        departmentEntity.MaxUsers = department.MaxUsers;
-        departmentEntity.UseGlobalRanks = department.UseGlobalRanks;
-
-        databaseContext.SaveChanges();
-        this.DepartmentUpdated?.Invoke(this, departmentEntity);
-        return departmentEntity;
-    }
-
-    /// <inheritdoc />
-    public void DeleteDepartment(Department department)
-    {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        databaseContext.Departments.Remove(department);
-        databaseContext.SaveChanges();
-        this.DepartmentDeleted?.Invoke(this, department);
-    }
-
-    /// <inheritdoc />
-    public Division CreateDivision(Division division)
-    {
-        if (division is null)
-        {
-            return null;
-        }
-
-        if (string.IsNullOrEmpty(division.Name))
-        {
-            return null;
-        }
-
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var divisionExists = databaseContext.Divisions.FirstOrDefault(d => d.Name == division.Name);
-        if (divisionExists is not null)
-        {
-            throw new DivisionExistsWithNameException();
-        }
-
-        var divisionEntry = databaseContext.Divisions.Add(division);
-        databaseContext.SaveChanges();
-        this.DivisionCreated?.Invoke(this, divisionEntry.Entity);
-        return divisionEntry.Entity;
-    }
-
-    /// <inheritdoc />
-    public Division UpdateDivision(Division division)
-    {
-        if (division is null)
-        {
-            return null;
-        }
-
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var divisionEntity = databaseContext.Divisions.FirstOrDefault(d => d.Name == division.Name);
-        if (divisionEntity is null)
-        {
-            return null;
-        }
-
-        if (string.IsNullOrEmpty(division.Name))
-        {
-            throw new ArgumentException("The name of the division can't be null or empty");
-        }
-
-        var divisionExists = databaseContext.Divisions.FirstOrDefault(d => d.Name == division.Name && d.Id != division.Id);
-        if (divisionExists is not null)
-        {
-            throw new DivisionExistsWithNameException();
-        }
-
-        divisionEntity.Name = division.Name;
-        divisionEntity.Users = division.Users;
-        divisionEntity.Department = division.Department;
-
-        databaseContext.SaveChanges();
-        this.DivisionUpdated?.Invoke(this, divisionEntity);
-        return divisionEntity;
-    }
-
-    /// <inheritdoc />
-    public void DeleteDivision(Division division)
-    {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        databaseContext.Divisions.Remove(division);
-        databaseContext.SaveChanges();
-        this.DivisionDeleted?.Invoke(this, division);
-    }
-
-    /// <inheritdoc />
-    public IEnumerable<Department> GetDepartments(DepartmentQueryOptions options = default)
-    {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        return databaseContext.Departments
-            .IncludeIf(options.IncludeDivisions, dept => dept.Divisions)
-            .IncludeIf(options.IncludeRanks, dept => dept.DepartmentRanks)
-            .IncludeIf(options.IncludeUsers, dept => dept.Users);
-    }
-
-    /// <inheritdoc />
-    public Department GetDepartmentById(int id, DepartmentQueryOptions options = default)
-    {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        return databaseContext.Departments
-            .IncludeIf(options.IncludeDivisions, dept => dept.Divisions)
-            .IncludeIf(options.IncludeRanks, dept => dept.DepartmentRanks)
-            .IncludeIf(options.IncludeUsers, dept => dept.Users)
-            .FirstOrDefault(department => department.Id == id);
-    }
-
-    /// <inheritdoc />
-    public void AddPlayerToDepartment(User user, Department department)
-    {
-        if (user is null || department is null)
-        {
-            throw new ArgumentException("Some of the provided arguments is null");
-        }
-
-        if (department.MaxUsers != 0 && department.MaxUsers == department.Users.Count())
-        {
-            throw new DepartmentFullException();
-        }
-
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        databaseContext.Users.Attach(user);
-        user.DepartmentId = department.Id;
-        user.DivisionId = null;
-        user.RankId = null;
-        databaseContext.SaveChanges();
-        this.PlayerJoinedDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
-    }
-
-    /// <inheritdoc />
-    public void AddPlayerToDepartment(Player player, Department department)
-    {
-        this.AddPlayerToDepartment(this._playerDataService.FindUserByLicense(player), department);
-    }
-
-    /// <inheritdoc />
-    public void RemovePlayerFromDepartment(User user)
-    {
-        if (user is null)
-        {
-            throw new ArgumentException("The provided user is null");
-        }
-
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        databaseContext.Users.Attach(user);
-        var department = user.Department;
-        user.DepartmentId = null;
-        user.DivisionId = null;
-        user.RankId = null;
-        user.Callsign = string.Empty;
-        databaseContext.SaveChanges();
-        this.PlayerLeftDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
-    }
-
-    /// <inheritdoc />
-    public void RemovePlayerFromDepartment(Player player)
-    {
-        this.RemovePlayerFromDepartment(this._playerDataService.FindUserByLicense(player));
-    }
-
-    /// <inheritdoc />
-    public void RemovePlayerFromDepartment(FPlayer player)
-    {
-        this.RemovePlayerFromDepartment(this._playerDataService.FindUserByLicense(player.GetUnderlyingPlayer()));
-    }
-
-    /// <inheritdoc />
-    public Department GetPlayerDepartment(Player player)
-    {
-        return this.GetPlayerDepartment(FPlayer.FromPlayer(player));
-    }
-
-    /// <inheritdoc />
-    public Department GetPlayerDepartment(FPlayer player)
-    {
-        var user = player.User;
-        if (user is null)
-        {
-            return null;
-        }
-
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        return databaseContext.Departments
-            .Include(x => x.Users)
-            .FirstOrDefault(department => department.Users.Any(x => x.Id == user.Id));
-    }
-
     [UIEvent(Events.UI.Department.GetAll)]
     private void GetAllUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var departments = databaseContext.Departments
-            .AsNoTracking()
+        var departments = this._departmentRepository
+            .GetAll()
             .Select(x => new SimpleDepartmentDTO
             {
                 Id = x.Id,
@@ -344,112 +108,135 @@ public class DepartmentService : IDepartmentService
     [UIEvent(Events.UI.Department.GetAllPageable)]
     private void GetAllPageableUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var departmentsRequest = JsonConvert.DeserializeObject<DepartmentsRequest>(serializedRequest);
+        var request = JsonConvert.DeserializeObject<DepartmentsRequest>(serializedRequest);
         var user = this._playerHandlerService.FindUserOfPlayer(player);
-        var filters = new Filters<Department>();
-        filters.Add(
-            !string.IsNullOrEmpty(departmentsRequest.Filters.Name),
-            department => department.Name.ToLower().Contains(departmentsRequest.Filters.Name.ToLower()));
-        filters.Add(
-            !string.IsNullOrEmpty(departmentsRequest.Filters.Callsign),
-            department => department.Callsign.ToLower().Contains(departmentsRequest.Filters.Callsign.ToLower()));
-        filters.Add(
-            departmentsRequest.Filters.UserDepartment,
-            department => department.Id == user.DepartmentId);
-        var page = databaseContext.Departments
-            .AsNoTracking()
-            .Include(department => department.Users)
-            .Paginate(departmentsRequest.Page, filters);
+        var page = this._departmentRepository.Paginate(
+            request.Page,
+            b => b
+                .If(!string.IsNullOrEmpty(request.Filters.Name), x => x.WhereContains("Name", request.Filters.Name))
+                .If(!string.IsNullOrEmpty(request.Filters.Callsign), x => x.WhereContains("Callsign", request.Filters.Callsign))
+                .If(request.Filters.UserDepartment, x => x.Where("Id = @Id", new { Id = user.DepartmentId })));
+        if (!page.Items.Any())
+        {
+            this._networkEventService.TriggerEventSerialized(player, guid, page);
+            return;
+        }
 
-        page.Items = page.Items.Select(item => new DepartmentResponse(item)).ToList();
+        var builderResult = SqlBuilder
+            .From($"{TableNames.Departments} d")
+            .Select("d.Id as DepartmentId, COUNT(u.Id) as UserCount")
+            .GroupBy("d.Id")
+            .LeftJoin(TableNames.Users, "u", "d.Id = u.DepartmentId")
+            .WhereIn("d.Id", page.Items.Select(d => d.Id))
+            .Build();
+        using var connection = this._dbConnectionFactory.CreateScope().Connection;
+        var departmentUsersCount = connection.Query<DepartmentUserCountDto>(builderResult.Sql, builderResult.Parameters).ToDictionary(c => c.DepartmentId);
+        page.Items = page.Items
+            .Select(item => departmentUsersCount.TryGetValue(item.Id, out var x) ? new DepartmentResponse(item, x.UserCount) : null)
+            .ToList();
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.Department.Get)]
     private void GetUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var department = databaseContext.Departments
-            .AsNoTracking()
-            .Include(dept => dept.Divisions)
-            .Include(dept => dept.DepartmentRanks)
-            .ThenInclude(x => x.Rank)
-            .FirstOrDefault(dept => dept.Id == request.Id);
+        var department = this._departmentRepository.FindById(request.Id);
+        if (department is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+
+        using var connection = this._dbConnectionFactory.CreateScope().Connection;
+        var divisionBuilderResult = SqlBuilder
+            .From(TableNames.Divisions)
+            .Where("DepartmentId = @DepartmentId", new { DepartmentId = department.Id })
+            .Build();
+        department.Divisions = connection.Query<Division>(divisionBuilderResult.Sql, divisionBuilderResult.Parameters).ToList();
+
+        var rankBuilderResult = SqlBuilder
+            .From($"{TableNames.DepartmentRanks} dr")
+            .Select("dr.*, r.*")
+            .InnerJoin(TableNames.Ranks, "r", $"dr.RankId = r.Id")
+            .Where("dr.DepartmentId = @DepartmentId", new { DepartmentId = department.Id })
+            .Build();
+        department.DepartmentRanks = connection.Query<DepartmentRank, Rank, DepartmentRank>(
+            rankBuilderResult.Sql,
+            (deptRank, rank) =>
+            {
+                deptRank.Rank = rank;
+                return deptRank;
+            },
+            rankBuilderResult.Parameters).ToList();
+
         this._networkEventService.TriggerEventSerialized(player, guid, department);
     }
 
     [UIEvent(Events.UI.Department.GetUsers)]
     private void GetDepartmentUsersForNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var departmentUsersRequest = JsonConvert.DeserializeObject<DepartmentUsersRequest>(serializedRequest);
+        var request = JsonConvert.DeserializeObject<DepartmentUsersRequest>(serializedRequest);
+        var page = this._userRepository.Paginate(
+            request.Page,
+            b => b
+                .If(true, x => x.Where("DepartmentId = @DepartmentId", new { DepartmentId = request.DepartmentId }))
+                .If(!string.IsNullOrEmpty(request.Filters.Name), x => x.WhereContains("Name", request.Filters.Name)));
+        if (!page.Items.Any())
+        {
+            this._networkEventService.TriggerEventSerialized(player, guid, page);
+            return;
+        }
 
-        var filters = new Filters<User>();
-        filters.Add(true, user => user.Department.Id == departmentUsersRequest.DepartmentId);
-        filters.Add(
-            !string.IsNullOrEmpty(departmentUsersRequest.Filters.Name),
-            department => department.Name.ToLower().Contains(departmentUsersRequest.Filters.Name.ToLower()));
+        var builderResult = SqlBuilder
+            .From(TableNames.UserCallsigns)
+            .InnerJoin(TableNames.Users, "u", $"u.UserCallsignFormatId = {TableNames.UserCallsigns}.Id")
+            .WhereIn("u.Id", page.Items.Select(d => d.Id))
+            .Build();
+        using var connection = this._dbConnectionFactory.CreateScope().Connection;
+        var callsigns = connection.Query<UserCallsignFormat>(builderResult.Sql, builderResult.Parameters).ToDictionary(c => c.Id);
+        foreach (var user in page.Items)
+        {
+            if (user.UserCallsignFormatId.HasValue)
+            {
+                user.CallsignFormat = callsigns[user.UserCallsignFormatId.Value];
+            }
+        }
 
-        var page = databaseContext.Users.AsNoTracking().Include(x => x.CallsignFormat).Paginate(departmentUsersRequest.Page, filters);
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.Department.GetDivision)]
     private void GetDepartmentDivisionForNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-
-        var division = databaseContext.Divisions
-            .AsNoTracking()
-            .FirstOrDefault(division => division.Id == request.Id);
+        var division = this._divisionRepository.FindById(request.Id);
         this._networkEventService.TriggerEventSerialized(player, guid, division);
     }
 
     [UIEvent(Events.UI.Department.GetDivisions)]
     private void GetDepartmentDivisionsForNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<DepartmentDivisionsRequest>(serializedRequest);
-
-        var filters = new Filters<Division>();
-        filters.Add(true, division => division.Department.Id == request.DepartmentId);
-        filters.Add(
-            !string.IsNullOrEmpty(request.Filters.Name),
-            department => department.Name.ToLower().Contains(request.Filters.Name.ToLower()));
-
-        var page = databaseContext.Divisions
-            .AsNoTracking()
-            .Paginate(request.Page, filters);
+        var page = this._divisionRepository.Paginate(
+            request.Page,
+            b => b
+                .If(true, x => x.Where("DepartmentId = @DepartmentId", new { DepartmentId = request.DepartmentId }))
+                .If(!string.IsNullOrEmpty(request.Filters.Name), x => x.WhereContains("Name", request.Filters.Name)));
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.Department.Create)]
     private void CreateDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        try
-        {
-            var request = JsonConvert.DeserializeObject<CreateDepartmentRequest>(serializedRequest);
-            this.CreateDepartment(new Department
-            {
-                Name = request.Name,
-                CallsignFormat = request.CallsignFormat,
-                MaxUsers = request.MaxUsers,
-            });
-            this._networkEventService.TriggerEventWithResponse(
-                player,
-                guid,
-                true,
-                "LABEL.SUCCESS.CREATE",
-                "LABEL.DEPARTMENT.SUCCESS.CREATE",
-                new Dictionary<string, string>
-                {
-                    { "department", request.Name },
-                });
-        }
-        catch (DepartmentExistsWithNameException)
+        var request = JsonConvert.DeserializeObject<CreateDepartmentRequest>(serializedRequest);
+        var builderResult = SqlBuilder
+            .From(TableNames.Departments)
+            .Where("Name = @Name", new { Name = request.Name })
+            .BuildCount();
+        using var connection = this._dbConnectionFactory.CreateScope().Connection;
+        var departmentWithSameName = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
+        if (departmentWithSameName > 0)
         {
             this._networkEventService.TriggerEventWithResponse(
                 player,
@@ -457,33 +244,42 @@ public class DepartmentService : IDepartmentService
                 false,
                 "ERROR.DEPARTMENT.CREATE.TITLE",
                 "ERROR.DEPARTMENT.NAME_CONFLICT.DESCRIPTION");
+            return;
         }
+
+        var department = this._departmentRepository.Add(new Department
+        {
+            Name = request.Name,
+            Callsign = request.Callsign,
+            CallsignFormat = request.CallsignFormat,
+            MaxUsers = request.MaxUsers,
+        });
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
+            true,
+            "LABEL.SUCCESS.CREATE",
+            "LABEL.DEPARTMENT.SUCCESS.CREATE",
+            new Dictionary<string, string>
+            {
+                { "department", request.Name },
+            });
+        this.DepartmentCreated?.Invoke(this, department);
     }
 
     [UIEvent(Events.UI.Department.DeleteDivision)]
     private void DeleteDivisionFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var divisionToDelete = databaseContext.Divisions
-            .Include(division => division.Users)
-            .Include(division => division.Department)
-            .FirstOrDefault(division => division.Id == request.Id);
-        if (divisionToDelete is null)
+        var division = this._divisionRepository.FindById(request.Id);
+        if (division is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        var divisionToDeleteName = divisionToDelete.Name;
-        foreach (var user in divisionToDelete.Users)
-        {
-            user.DivisionId = null;
-        }
-
-        databaseContext.Divisions.Remove(divisionToDelete);
-        databaseContext.SaveChanges();
-        this.DivisionDeleted?.Invoke(this, divisionToDelete);
+        this._divisionRepository.Delete(request.Id);
+        this.DivisionDeleted?.Invoke(this, division);
         this._networkEventService.TriggerEventWithResponse(
             player,
             guid,
@@ -492,29 +288,29 @@ public class DepartmentService : IDepartmentService
             "LABEL.DIVISION.SUCCESS.DELETE",
             new Dictionary<string, string>
             {
-                { "division", divisionToDeleteName },
+                { "division", division.Name },
             });
     }
 
     [UIEvent(Events.UI.Department.EditDivision)]
     private void EditDivisionFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<EditDivisionRequest>(serializedRequest);
-        var divisionToEdit =
-            databaseContext.Divisions.FirstOrDefault(division =>
-                division.Id == request.DivisionId);
-        if (divisionToEdit is null)
+        var division = this._divisionRepository.FindById(request.DivisionId);
+        if (division is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        var divisionExistsWithName = databaseContext.Divisions
-            .FirstOrDefault(division => division.Name == request.Name &&
-                                        division.Department.Id == request.DepartmentId &&
-                                        division.Id != divisionToEdit.Id);
-        if (divisionExistsWithName != null)
+        var builderResult = SqlBuilder
+            .From(TableNames.Divisions)
+            .Where("Name = @Name", new { Name = request.Name })
+            .Where("DepartmentId = @DepartmentId", new { DepartmentId = request.DepartmentId })
+            .BuildCount();
+        using var connection = this._dbConnectionFactory.CreateScope().Connection;
+        var divisionWithSameName = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
+        if (divisionWithSameName > 0)
         {
             this._networkEventService.TriggerEventWithResponse(
                 player,
@@ -525,10 +321,7 @@ public class DepartmentService : IDepartmentService
             return;
         }
 
-        var divisionToEditOldName = divisionToEdit.Name;
-        divisionToEdit.Name = request.Name;
-        databaseContext.SaveChanges();
-        this.DivisionUpdated?.Invoke(this, divisionToEdit);
+        this._divisionRepository.Update(division, x => { x.Name = request.Name; });
         this._networkEventService.TriggerEventWithResponse(
             player,
             guid,
@@ -537,18 +330,23 @@ public class DepartmentService : IDepartmentService
             "LABEL.DIVISION.SUCCESS.EDIT",
             new Dictionary<string, string>
             {
-                { "division", divisionToEditOldName },
+                { "division", division.Name },
             });
+        this.DivisionUpdated?.Invoke(this, division);
     }
 
     [UIEvent(Events.UI.Department.CreateDivision)]
     private void CreateDivisionFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<CreateDivisionRequest>(serializedRequest);
-        var divisionExistsWithName = databaseContext.Divisions.FirstOrDefault(division =>
-            division.Name == request.Name && division.Department.Id == request.DepartmentId);
-        if (divisionExistsWithName != null)
+        var builderResult = SqlBuilder
+            .From(TableNames.Divisions)
+            .Where("Name = @Name", new { Name = request.Name })
+            .Where("DepartmentId = @DepartmentId", new { DepartmentId = request.DepartmentId })
+            .BuildCount();
+        using var connection = this._dbConnectionFactory.CreateScope().Connection;
+        var divisionWithSameName = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
+        if (divisionWithSameName > 0)
         {
             this._networkEventService.TriggerEventWithResponse(
                 player,
@@ -559,20 +357,17 @@ public class DepartmentService : IDepartmentService
             return;
         }
 
-        var department = databaseContext.Departments.FirstOrDefault(department => department.Id == request.DepartmentId);
-        if (department is null)
+        if (!this._departmentRepository.Exists(request.DepartmentId))
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        var createdDivisionEntry = databaseContext.Divisions.Add(new Division
+        var division = this._divisionRepository.Add(new Division
         {
-            Department = department,
             Name = request.Name,
+            DepartmentId = request.DepartmentId,
         });
-        databaseContext.SaveChanges();
-        this.DivisionCreated?.Invoke(this, createdDivisionEntry.Entity);
         this._networkEventService.TriggerEventWithResponse(
             player,
             guid,
@@ -583,25 +378,28 @@ public class DepartmentService : IDepartmentService
             {
                 { "division", request.Name },
             });
+        this.DivisionCreated?.Invoke(this, division);
     }
 
     [UIEvent(Events.UI.Department.Edit)]
     private void EditDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<EditDepartmentRequest>(serializedRequest);
-        var department = databaseContext.Departments
-            .Include(department => department.Users)
-            .FirstOrDefault(department => department.Id == request.DepartmentId);
+        var department = this._departmentRepository.FindById(request.DepartmentId);
         if (department is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        var departmentExistsWithName = databaseContext.Departments.AsNoTracking().FirstOrDefault(dept =>
-            dept.Id != request.DepartmentId && dept.Name == request.Name);
-        if (departmentExistsWithName != null)
+        var builderResult = SqlBuilder
+            .From(TableNames.Departments)
+            .Where("Name = @Name", new { Name = request.Name })
+            .Where("Id != @Id", new { Id = request.DepartmentId })
+            .BuildCount();
+        using var connection = this._dbConnectionFactory.CreateScope().Connection;
+        var departmentWithSameName = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
+        if (departmentWithSameName > 0)
         {
             this._networkEventService.TriggerEventWithResponse(
                 player,
@@ -612,37 +410,33 @@ public class DepartmentService : IDepartmentService
             return;
         }
 
-        if (request.DefaultRankId != -1)
+        if (request.DefaultRankId != -1 && !this._rankRepository.Exists(request.DefaultRankId))
         {
-            var defaultRank = databaseContext.Ranks.FirstOrDefault(rank => rank.Id == request.DefaultRankId);
-            if (defaultRank is null)
-            {
-                this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
-                return;
-            }
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
         }
 
-        var departmentOldName = department.Name;
-        department.Name = request.Name;
-        department.Callsign = string.IsNullOrEmpty(request.Callsign)
-            ? request.Name.ToAcronym()
-            : request.Callsign;
-        department.MaxUsers = request.MaxUsers;
-        department.DefaultRankId = request.DefaultRankId == -1 ? (int?)null : request.DefaultRankId;
-
         var oldUseGlobalRanks = department.UseGlobalRanks;
-        department.UseGlobalRanks = request.UseGlobalRanks;
+        this._departmentRepository.Update(department, x =>
+        {
+            x.Name = request.Name;
+            x.Callsign = string.IsNullOrEmpty(request.Callsign)
+                ? request.Name.ToAcronym()
+                : request.Callsign;
+            x.MaxUsers = request.MaxUsers;
+            x.DefaultRankId = request.DefaultRankId == -1 ? null : request.DefaultRankId;
+            x.UseGlobalRanks = request.UseGlobalRanks;
+        });
 
         if (oldUseGlobalRanks != request.UseGlobalRanks)
         {
-            foreach (var user in department.Users)
+            var users = this._departmentRepository.GetUsers(department);
+            foreach (var user in users)
             {
-                user.RankId = null;
+                this._userRepository.Update(user, x => { x.RankId = null; });
             }
         }
 
-        databaseContext.SaveChanges();
-        this.DepartmentUpdated?.Invoke(this, department);
         this._networkEventService.TriggerEventWithResponse(
             player,
             guid,
@@ -651,28 +445,26 @@ public class DepartmentService : IDepartmentService
             "LABEL.DEPARTMENT.SUCCESS.EDIT",
             new Dictionary<string, string>
             {
-                { "department", departmentOldName },
+                { "department", department.Name },
             });
+        this.DepartmentUpdated?.Invoke(this, department);
     }
 
     [UIEvent(Events.UI.Department.EditCallsignFormat)]
     private void EditDepartmentCallsignFormatUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<EditDepartmentCallsignFormatRequest>(serializedRequest);
-        var department = databaseContext.Departments
-            .Include(x => x.Users)
-            .ThenInclude(u => u.CallsignFormat)
-            .FirstOrDefault(department => department.Id == request.DepartmentId);
+        var department = this._departmentRepository.FindById(request.DepartmentId);
         if (department is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        department.CallsignFormat = request.CallsignFormat;
+        this._departmentRepository.Update(department, x => { x.CallsignFormat = request.CallsignFormat; });
 
-        foreach (var user in department.Users)
+        var departmentUsers = this._departmentRepository.GetUsers(department).ToList();
+        foreach (var user in departmentUsers)
         {
             var callsignGenerator = new CallsignGenerator(department.CallsignFormat);
             string callsign;
@@ -680,26 +472,26 @@ public class DepartmentService : IDepartmentService
             {
                 callsign = callsignGenerator.GenerateCallsign().BuildCallsign();
             }
-            while (department.Users.Any(x => x.Callsign == callsign));
+            while (departmentUsers.Any(x => x.Callsign == callsign));
 
             user.Callsign = callsign;
-            if (user.CallsignFormat is not null)
+            this._userRepository.Update(user, x => { x.Callsign = callsign; });
+
+            var userCallsignFormat = this._userRepository.GetCallsignFormat(user);
+            if (userCallsignFormat is not null)
             {
-                user.CallsignFormat.Values = callsignGenerator.GetGeneratedItemValues();
+                this._userRepository.UpdateCallsignFormat(userCallsignFormat, x => { x.FormatValues = callsignGenerator.GetGeneratedItemValues(); });
             }
             else
             {
-                var entry = databaseContext.UserCallsigns.Add(new UserCallsignFormat
+                var callsignFormat = this._userRepository.AddCallsignFormat(user, new UserCallsignFormat
                 {
-                    Values = callsignGenerator.GetGeneratedItemValues(),
+                    FormatValues = callsignGenerator.GetGeneratedItemValues(),
                 });
-                databaseContext.SaveChanges();
-                user.UserCallsignFormatId = entry.Entity.Id;
+                this._userRepository.Update(user, x => { x.UserCallsignFormatId = callsignFormat.Id; });
             }
         }
 
-        databaseContext.SaveChanges();
-        this.DepartmentUpdated?.Invoke(this, department);
         this._networkEventService.TriggerEventWithResponse(
             player,
             guid,
@@ -715,47 +507,29 @@ public class DepartmentService : IDepartmentService
     [UIEvent(Events.UI.Department.CheckIfDepartmentNameTaken)]
     private void CheckIfDepartmentNameTaken([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<NameTakenRequest>(serializedRequest);
-        Department departmentExists;
-        if (request.CheckForDepartmentId)
-        {
-            departmentExists =
-                databaseContext.Departments.FirstOrDefault(department =>
-                    department.Name == request.Name && department.Id != request.DepartmentId);
-        }
-        else
-        {
-            departmentExists = databaseContext.Departments.FirstOrDefault(department => department.Name == request.Name);
-        }
-
-        this._networkEventService.TriggerEventSerialized(player, guid, new NameTakenResponse(departmentExists != null));
+        using var connection = this._dbConnectionFactory.CreateScope().Connection;
+        var builderResult = SqlBuilder
+            .From(TableNames.Departments)
+            .Where("Name = @Name", new { Name = request.Name })
+            .If(request.CheckForDepartmentId, b => b.Where("Id != @Id", new { Id = request.DepartmentId }))
+            .BuildCount();
+        var count = connection.ExecuteScalar<int>(builderResult.Sql, builderResult.Parameters);
+        this._networkEventService.TriggerEventSerialized(player, guid, new NameTakenResponse(count > 0));
     }
 
     [UIEvent(Events.UI.Department.Delete)]
     private void DeleteDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var department = databaseContext.Departments
-            .Include(department => department.Users)
-            .FirstOrDefault(department => department.Id == request.Id);
+        var department = this._departmentRepository.FindById(request.Id);
         if (department is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        foreach (var user in department.Users)
-        {
-            user.DepartmentId = null;
-            user.DivisionId = null;
-            user.RankId = null;
-        }
-
-        var departmentOldName = department.Name;
-        databaseContext.Departments.Remove(department);
-        databaseContext.SaveChanges();
+        this._departmentRepository.Delete(request.Id);
         this.DepartmentDeleted?.Invoke(this, department);
         this._networkEventService.TriggerEventWithResponse(
             player,
@@ -765,89 +539,108 @@ public class DepartmentService : IDepartmentService
             "LABEL.DEPARTMENT.SUCCESS.DELETE",
             new Dictionary<string, string>
             {
-                { "department", departmentOldName },
+                { "department", department.Name },
             });
     }
 
     [UIEvent(Events.UI.Department.Join)]
     private void PlayerJoinDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var department = databaseContext.Departments
-            .Include(department => department.Users)
-            .ThenInclude(u => u.CallsignFormat)
-            .FirstOrDefault(department => department.Id == request.Id);
-
+        var department = this._departmentRepository.FindById(request.Id);
         if (department is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        try
-        {
-            this.AddPlayerToDepartment(player, department);
-            var user = this._playerDataService.FindUserByLicense(player, false);
-            if (department.DefaultRankId is not null)
-            {
-                user.RankId = department.DefaultRankId;
-            }
-
-            var callsign = string.Join(string.Empty, user.Callsign);
-            var callsignMatchesWithFormat = !string.IsNullOrEmpty(callsign) && new Regex("^[A-Z0-9-]+$").IsMatch(callsign);
-            if (string.IsNullOrEmpty(callsign) || !callsignMatchesWithFormat)
-            {
-                var callsignGenerator = new CallsignGenerator(department.CallsignFormat);
-                string newCallsign;
-                do
-                {
-                    newCallsign = callsignGenerator.GenerateCallsign().BuildCallsign();
-                }
-                while (department.Users.Any(x => x.Callsign == newCallsign));
-
-                user = this._playerDataService.FindUserByLicense(player);
-                user.Callsign = newCallsign;
-
-                if (user.CallsignFormat is not null)
-                {
-                    user.CallsignFormat.Values = callsignGenerator.GetGeneratedItemValues();
-                }
-                else
-                {
-                    var entry = databaseContext.UserCallsigns.Add(new UserCallsignFormat
-                    {
-                        Values = callsignGenerator.GetGeneratedItemValues(),
-                    });
-                    databaseContext.SaveChanges();
-                    user.UserCallsignFormatId = entry.Entity.Id;
-                }
-            }
-
-            databaseContext.SaveChanges();
-
-            this._networkEventService.TriggerEventWithResponse(
-                player,
-                guid,
-                true,
-                "LABEL.SUCCESS.JOIN",
-                "LABEL.DEPARTMENT.SUCCESS.JOIN",
-                new Dictionary<string, string>
-                {
-                    { "department", department!.Name },
-                });
-        }
-        catch (DepartmentFullException)
+        var departmentUsersCount = this._departmentRepository.GetUsers(department).Count();
+        if (department.MaxUsers != 0 && department.MaxUsers == departmentUsersCount)
         {
             this._networkEventService.TriggerEventWithResponse(player, guid, false, "ERROR.DEPARTMENT.FULL.TITLE", "ERROR.DEPARTMENT.FULL.DESCRIPTION");
+            return;
         }
+
+        var user = this._playerDataService.FindUserByLicense(player, false);
+        this._userRepository.Update(user, x => { x.DepartmentId = department.Id; });
+        if (department.DefaultRankId is not null)
+        {
+            this._userRepository.Update(user, x => { x.RankId = department.DefaultRankId; });
+        }
+
+        var callsign = string.Join(string.Empty, user.Callsign);
+        var callsignMatchesWithFormat = !string.IsNullOrEmpty(callsign) && new Regex("^[A-Z0-9-]+$").IsMatch(callsign);
+        if (string.IsNullOrEmpty(callsign) || !callsignMatchesWithFormat)
+        {
+            var callsignGenerator = new CallsignGenerator(department.CallsignFormat);
+            var departmentUsers = this._departmentRepository.GetUsers(department).ToList();
+            string newCallsign;
+            do
+            {
+                newCallsign = callsignGenerator.GenerateCallsign().BuildCallsign();
+            }
+            while (departmentUsers.Any(x => x.Callsign == newCallsign));
+
+            user = this._playerDataService.FindUserByLicense(player);
+            this._userRepository.Update(user, x => { x.Callsign = newCallsign; });
+
+            var userCallsignFormat = this._userRepository.GetCallsignFormat(user);
+            if (userCallsignFormat is not null)
+            {
+                this._userRepository.UpdateCallsignFormat(userCallsignFormat, x => { x.FormatValues = callsignGenerator.GetGeneratedItemValues(); });
+            }
+            else
+            {
+                var callsignFormat = this._userRepository.AddCallsignFormat(user, new UserCallsignFormat
+                {
+                    FormatValues = callsignGenerator.GetGeneratedItemValues(),
+                });
+                this._userRepository.Update(user, x => { x.UserCallsignFormatId = callsignFormat.Id; });
+            }
+        }
+
+        this._networkEventService.TriggerEventWithResponse(
+            player,
+            guid,
+            true,
+            "LABEL.SUCCESS.JOIN",
+            "LABEL.DEPARTMENT.SUCCESS.JOIN",
+            new Dictionary<string, string>
+            {
+                { "department", department!.Name },
+            });
+        this.PlayerJoinedDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
     }
 
     [UIEvent(Events.UI.Department.Leave)]
     private void PlayerLeaveDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var playerDepartment = this._playerDataService.FindUserByLicense(player).Department;
-        this.RemovePlayerFromDepartment(player);
+        var user = this._playerDataService.FindUserByLicense(player);
+        if (user is null || !user.DepartmentId.HasValue)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+
+        var department = this._departmentRepository.FindById(user.DepartmentId.Value);
+        if (department is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
+
+        if (user.UserCallsignFormatId.HasValue)
+        {
+            this._userRepository.DeleteCallsignFormat(user, user.UserCallsignFormatId.Value);
+        }
+
+        this._userRepository.Update(user, x =>
+        {
+            x.DepartmentId = null;
+            x.DivisionId = null;
+            x.RankId = null;
+            x.Callsign = string.Empty;
+        });
         this._networkEventService.TriggerEventWithResponse(
             player,
             guid,
@@ -856,95 +649,115 @@ public class DepartmentService : IDepartmentService
             "LABEL.DEPARTMENT.SUCCESS.LEAVE",
             new Dictionary<string, string>
             {
-                { "department", playerDepartment!.Name },
+                { "department", department.Name },
             });
+        this.PlayerLeftDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
     }
 
     [UIEvent(Events.UI.Department.RemoveUser)]
     private void KickPlayerFromDepartmentNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var idRequest = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var user = databaseContext.Users.FirstOrDefault(x => x.Id == idRequest.Id);
-        if (user is null)
+        var user = this._userRepository.FindById(idRequest.Id);
+        if (user is null || !user.DepartmentId.HasValue)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        this.RemovePlayerFromDepartment(user);
+        var department = this._departmentRepository.FindById(user.DepartmentId.Value);
+        if (department is null)
+        {
+            this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
+            return;
+        }
 
+        this._userRepository.Update(user, x =>
+        {
+            x.DepartmentId = null;
+            x.DivisionId = null;
+            x.RankId = null;
+        });
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "Kick", "Kicking player");
+        this.PlayerLeftDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
     }
 
     [UIEvent(Events.UI.Department.GetAllSimpleWithArea)]
     private void GetAllSimpleWithAreaCoordinatesUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        var departments = databaseContext.Departments
-            .Include(x => x.AreaCoordinates)
-            .Select(department => new SimpleDepartmentWithAreaDTO
-            {
-                Id = department.Id,
-                Name = department.Name,
-                Callsign = department.Callsign,
-                Coordinates = department.AreaCoordinates.ToList(),
-            })
-            .ToList();
-        this._networkEventService.TriggerEventSerialized(player, guid, departments);
+        var departments = this._departmentRepository.GetAll().ToList();
+        var builderResult = SqlBuilder.From(TableNames.DepartmentAreaCoordinates).Build();
+        using var connection = this._dbConnectionFactory.CreateScope().Connection;
+        var departmentAreaCoordinates = connection.Query<DepartmentAreaCoordinate>(builderResult.Sql, builderResult.Parameters).ToList();
+        var list = departments.Select(department => new SimpleDepartmentWithAreaDTO
+        {
+            Id = department.Id,
+            Name = department.Name,
+            Callsign = department.Callsign,
+            Coordinates = departmentAreaCoordinates.FindAll(x => x.DepartmentId == department.Id),
+        });
+        this._networkEventService.TriggerEventSerialized(player, guid, list);
     }
 
     [UIEvent(Events.UI.Department.UpdateAreas)]
     private void UpdateAreasUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<UpdateDepartmentAreasRequest>(serializedRequest);
         foreach (var area in request.Areas)
         {
-            var department = databaseContext.Departments
-                .Include(x => x.AreaCoordinates)
-                .FirstOrDefault(x => x.Id == area.DepartmentId);
-            if (department is null)
+            if (!this._departmentRepository.Exists(area.DepartmentId))
             {
                 this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
                 return;
             }
 
-            var coordinatesToRemove = department.AreaCoordinates
-                .Where(areaCoordinate => area.Coordinates.All(x => x.Id != areaCoordinate.Id))
-                .ToList();
-            foreach (var coordinateToRemove in coordinatesToRemove)
-            {
-                databaseContext.DepartmentAreaCoordinates.Remove(coordinateToRemove);
-            }
+            var idsToKeep = area.Coordinates.Select(x => x.Id).ToList();
+            var builderResult = SqlBuilder
+                .From(TableNames.DepartmentAreaCoordinates)
+                .Delete()
+                .Where("DepartmentId = @DepartmentId", new { DepartmentId = area.DepartmentId })
+                .If(idsToKeep.Any(), b => b.WhereNotIn("Id", idsToKeep))
+                .Build();
+            using var connection = this._dbConnectionFactory.CreateScope().Connection;
+            connection.Execute(builderResult.Sql, builderResult.Parameters);
 
             foreach (var coordinate in area.Coordinates)
             {
                 if (coordinate.Id == -1)
                 {
-                    department.AreaCoordinates.Add(new DepartmentAreaCoordinate
+                    this._departmentAreaCoordinateRepository.Add(new DepartmentAreaCoordinate
                     {
-                        Department = department,
+                        DepartmentId = coordinate.DepartmentId,
                         X = coordinate.X,
                         Y = coordinate.Y,
                     });
                 }
                 else
                 {
-                    var areaCoordinate = department.AreaCoordinates.FirstOrDefault(x => x.Id == coordinate.Id);
+                    var areaCoordinate = this._departmentAreaCoordinateRepository.FindById(coordinate.Id);
                     if (areaCoordinate is null)
                     {
                         continue;
                     }
 
-                    areaCoordinate.X = coordinate.X;
-                    areaCoordinate.Y = coordinate.Y;
+                    this._departmentAreaCoordinateRepository.Update(areaCoordinate, x =>
+                    {
+                        x.X = coordinate.X;
+                        x.Y = coordinate.Y;
+                    });
                 }
             }
         }
 
-        databaseContext.SaveChanges();
-
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "LABEL.SUCCESS.EDIT", "LABEL.DEPARTMENT_AREA_MANAGEMENT.SUCCESS.EDIT");
     }
+
+#pragma warning disable
+    private class DepartmentUserCountDto
+    {
+        public int DepartmentId { get; set; }
+
+        public int UserCount { get; set; }
+    }
+#pragma warning restore
 }

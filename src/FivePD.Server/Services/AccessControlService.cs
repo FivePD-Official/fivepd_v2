@@ -11,6 +11,7 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Requests;
+using FivePD.Server.Repositories;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
@@ -21,7 +22,7 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class AccessControlService : IAccessControlService, IOnInit
 {
-    private readonly IDatabaseContextFactory _dbContextFactory;
+    private readonly UserRepository _userRepository;
     private readonly EventHandlerDictionary _eventHandlerDictionary;
     private readonly IPlayerHandlerService _playerHandlerService;
     private readonly INetworkEventService _networkEventService;
@@ -29,16 +30,17 @@ public class AccessControlService : IAccessControlService, IOnInit
     /// <summary>
     /// Initializes a new instance of the <see cref="AccessControlService"/> class.
     /// </summary>
+    /// <param name="userRepository">The <see cref="UserRepository"/> to use.</param>
     /// <param name="databaseContext">The <see cref="DatabaseContext"/> to use.</param>
     /// <param name="eventHandlerDictionary">The <see cref="EventHandlerDictionary"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="PlayerHandlerService"/> to use.</param>
     public AccessControlService(
-        IDatabaseContextFactory dbContextFactory,
+        UserRepository userRepository,
         EventHandlerDictionary eventHandlerDictionary,
         IPlayerHandlerService playerHandlerService,
         INetworkEventService networkEventService)
     {
-        this._dbContextFactory = dbContextFactory;
+        this._userRepository = userRepository;
         this._eventHandlerDictionary = eventHandlerDictionary;
         this._playerHandlerService = playerHandlerService;
         this._networkEventService = networkEventService;
@@ -69,10 +71,7 @@ public class AccessControlService : IAccessControlService, IOnInit
             return;
         }
 
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        databaseContext.Users.Attach(user);
-        user.AccessFivePD = access;
-        databaseContext.SaveChanges();
+        this._userRepository.Update(user, x => { x.AccessFivePD = access;});
 
         var player = this._playerHandlerService.FindPlayerOfUser(user);
         player?.TriggerEvent(access ? Events.AccessControl.GiveAccess : Events.AccessControl.RemoveAccess);
@@ -93,10 +92,8 @@ public class AccessControlService : IAccessControlService, IOnInit
     [UIEvent(Events.AccessControl.GiveAccessUI)]
     private void AllowUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var user = databaseContext.Users.FirstOrDefault(x => x.Id == request.Id);
+        var user = this._userRepository.FindById(request.Id);
         if (user is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
@@ -119,10 +116,8 @@ public class AccessControlService : IAccessControlService, IOnInit
     [UIEvent(Events.AccessControl.RemoveAccessUI)]
     private void DisallowUI([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var user = databaseContext.Users.FirstOrDefault(x => x.Id == request.Id);
+        var user = this._userRepository.FindById(request.Id);
         if (user is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);

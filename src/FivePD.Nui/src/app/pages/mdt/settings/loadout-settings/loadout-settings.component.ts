@@ -52,7 +52,7 @@ export class LoadoutSettingsComponent {
   });
   readonly weaponCountColumn = new Column<LoadoutConfig>({
     header: 'LABEL.LOADOUT_CONFIG.COLUMN.WEAPON.COUNT.SINGULAR',
-    valueResolver: item => item.LoadoutWeapons.length.toString(),
+    valueResolver: item => item.LoadoutWeaponCount ? item.LoadoutWeaponCount.toString() : '0',
   });
 
   readonly loadoutConfigCollation$ = new BehaviorSubject<Collation>({Page: 1, Filters: {}});

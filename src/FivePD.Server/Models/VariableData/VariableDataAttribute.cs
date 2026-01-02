@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FivePD.Server.Models.VariableData;
 
 /// <summary>
 /// Represents a <see cref="VariableDataSet"/> attribute.
 /// </summary>
-[Table("fivepd_variable_data_attributes")]
 public class VariableDataAttribute
 {
     /// <summary>
@@ -18,6 +16,11 @@ public class VariableDataAttribute
     /// Gets or sets the id of this attribute.
     /// </summary>
     public int Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the associated <see cref="VariableDataSet"/>.
+    /// </summary>
+    public string SetId { get; set; }
 
     /// <summary>
     /// Gets or sets which set this attribute belongs to.
@@ -44,7 +47,7 @@ public class VariableDataAttribute
     /// Gets or sets the order of this attribute.
     /// Used for overriding the default order of grid columns.
     /// </summary>
-    public int Order { get; set; }
+    public int DisplayOrder { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether this attribute is required in forms or not.

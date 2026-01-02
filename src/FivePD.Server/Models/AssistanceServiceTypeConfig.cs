@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using CitizenFX.Core;
 
 namespace FivePD.Server.Models;
@@ -7,7 +6,6 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents the configuration for an assistance service type.
 /// </summary>
-[Table("fivepd_assistance_service_type_configs")]
 public class AssistanceServiceTypeConfig
 {
     /// <summary>
@@ -43,7 +41,7 @@ public class AssistanceServiceTypeConfig
     /// <summary>
     /// Gets or sets the manual spawn locations.
     /// </summary>
-    public List<Vector3> ManualSpawnLocations { get; set; }
+    public List<Vector3> ManualSpawnLocations { get; set; } = new();
 
     /// <summary>
     /// Determines whether the spawn type is set to "AUTO".

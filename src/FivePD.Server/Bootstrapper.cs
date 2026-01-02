@@ -16,6 +16,7 @@ using FivePD.Server.Interfaces.Dispatcher;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Interfaces.TrafficStopInterfaces;
 using FivePD.Server.Interfaces.VariableData;
+using FivePD.Server.Repositories;
 using FivePD.Server.Services;
 using FivePD.Server.Services.Addons;
 using FivePD.Server.Services.Callouts;
@@ -28,6 +29,8 @@ using Cfx = CitizenFX.Core.Native;
 using Debug = CitizenFX.Core.Debug;
 
 namespace FivePD.Server;
+
+#pragma warning disable
 
 /// <summary>
 /// The server entrypoint. Handles the
@@ -89,7 +92,13 @@ internal class Bootstrapper : BaseScript
             new Phase("Database set parameters", () => DatabaseHandler.SetParameters(this._provider, this._bootstrapLogger)),
             false);
 
-        this._phases.Add(new Phase("Database ensure state", DatabaseHandler.EnsureCorrectState), false);
+        this._phases.Add(new Phase("Database ensure database config", DatabaseHandler.EnsureDatabaseConfig), false);
+
+        this._phases.Add(new Phase("Database ensure database exists", DatabaseHandler.EnsureDatabaseExists), false);
+
+        this._phases.Add(new Phase("Database ensure connection", DatabaseHandler.EnsureConnection), false);
+
+        this._phases.Add(new Phase("Database ensure schema", DatabaseHandler.EnsureSchema), false);
 
         this._phases.Add(new Phase("Database seed data", DatabaseHandler.SeedData), false);
 
@@ -199,10 +208,33 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton(Log.Logger);
         services.AddSingleton(this.EventHandlers);
         services.AddSingleton(this.Players);
-        services.AddDbContext<DatabaseContext>(ServiceLifetime.Scoped);
+        services.AddSingleton<IDatabaseConnectionFactory, DatabaseConnectionFactory>();
 
         services.AddTransient<NetworkEventService>();
         services.AddTransient<INetworkEventService>(provider => provider.GetRequiredService<NetworkEventService>());
+
+        services.AddSingleton<DepartmentRepository>();
+        services.AddSingleton<DepartmentAreaCoordinateRepository>();
+        services.AddSingleton<DivisionRepository>();
+        services.AddSingleton<RankRepository>();
+        services.AddSingleton<VehicleConfigRepository>();
+        services.AddSingleton<LoadoutConfigRepository>();
+        services.AddSingleton<WeaponRepository>();
+        services.AddSingleton<WeaponComponentRepository>();
+        services.AddSingleton<UserRepository>();
+        services.AddSingleton<PedDataRepository>();
+        services.AddSingleton<VehicleDataRepository>();
+        services.AddSingleton<MessageRepository>();
+        services.AddSingleton<CalloutDetailsRepository>();
+        services.AddSingleton<LocationRepository>();
+        services.AddSingleton<AssistanceServiceStationRepository>();
+        services.AddSingleton<AssistanceServiceStationTypeConfigRepository>();
+        services.AddSingleton<AssistanceServiceTypeConfigRepository>();
+        services.AddSingleton<IncidentHistoryRepository>();
+        services.AddSingleton<VariableDataEntityRepository>();
+        services.AddSingleton<VariableDataAttributeRepository>();
+        services.AddSingleton<VariableDataValueRepository>();
+        services.AddSingleton<VariableDataSetRepository>();
 
         // Addons
         services.AddTransient<AddonLoggerService>();
@@ -217,8 +249,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<AddonMetadataService>();
         services.AddSingleton<IAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
         services.AddSingleton<IInternalAddonMetadataService>(provider => provider.GetRequiredService<AddonMetadataService>());
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AddonMetadataService>());
 
-        // Loose data repositories
+        // Variable data repositories
         services.AddSingleton<ArrestReportService>();
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ArrestReportService>());
         services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<ArrestReportService>());
@@ -268,8 +301,6 @@ internal class Bootstrapper : BaseScript
 
         services.AddSingleton<ProbabilityService>();
         services.AddSingleton<IProbabilityService>(provider => provider.GetRequiredService<ProbabilityService>());
-
-        services.AddSingleton<IDatabaseContextFactory, DatabaseContextScopeFactory>();
 
         services.AddSingleton<AssistanceServiceManagerService>();
         services.AddSingleton<IAssistanceServiceManagerService>(provider => provider.GetRequiredService<AssistanceServiceManagerService>());

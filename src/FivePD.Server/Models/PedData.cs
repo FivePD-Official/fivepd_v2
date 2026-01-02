@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using FivePD.Common.ConfigModels;
 using FivePD.Common.Enums;
@@ -11,7 +10,6 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents a ped history.
 /// </summary>
-[Table("fivepd_ped_data")]
 public class PedData
 {
     /// <summary>
@@ -22,12 +20,7 @@ public class PedData
     /// <summary>
     /// Gets or sets the identifier of the vehicle the ped is owning.
     /// </summary>
-    public int? VehicleDataId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the identifier of the vehicle the ped is owning.
-    /// </summary>
-    public VehicleData VehicleData { get; set; }
+    public List<VehicleData> VehicleData { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the gender.
@@ -52,17 +45,17 @@ public class PedData
     /// <summary>
     /// Gets or sets the items.
     /// </summary>
-    public List<Item> Items { get; set; }
+    public List<Item> Items { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the warrants.
     /// </summary>
-    public List<string> Warrants { get; set; }
+    public List<string> Warrants { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the licenses.
     /// </summary>
-    public IList<PedLicense> Licenses { get; set; }
+    public List<PedLicense> Licenses { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the alcohol level.
@@ -72,7 +65,7 @@ public class PedData
     /// <summary>
     /// Gets or sets the drugs.
     /// </summary>
-    public List<Drug> Drugs { get; set; }
+    public List<Drug> Drugs { get; set; } = new();
 
     /// <summary>
     /// Checks if the ped has a license.

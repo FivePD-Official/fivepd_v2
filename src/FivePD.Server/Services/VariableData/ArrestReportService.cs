@@ -6,7 +6,7 @@ using FivePD.Server.Models.VariableData.Sets;
 namespace FivePD.Server.Services.VariableData;
 
 /// <inheritdoc />
-public class ArrestReportService : VariableDataRepository<ArrestReportSet>
+public class ArrestReportService : VariableDataBaseService<ArrestReportSet>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ArrestReportService"/> class.

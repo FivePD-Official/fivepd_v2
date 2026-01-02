@@ -10,5 +10,6 @@ internal record struct AssistanceServiceGetStationTypeConfigsPageRequest()
 
     public record struct RequestFilters
     {
+        public int AssistanceServiceStationId { get; set; }
     }
 }

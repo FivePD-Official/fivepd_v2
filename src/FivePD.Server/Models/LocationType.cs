@@ -1,7 +1,7 @@
 namespace FivePD.Server.Models;
 
 /// <summary>
-/// Represents a location type to be used in marker UI.
+/// Represents a location type to be used in the marker UI.
 /// </summary>
 public enum LocationType
 {

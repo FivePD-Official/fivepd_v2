@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Server.Models.LoadoutModels.JoinTables;
 
 namespace FivePD.Server.Models.LoadoutModels;
@@ -7,7 +6,6 @@ namespace FivePD.Server.Models.LoadoutModels;
 /// <summary>
 /// Used to get/set weapon config.
 /// </summary>
-[Table("fivepd_weapons")]
 public class Weapon
 {
     /// <summary>
@@ -29,12 +27,12 @@ public class Weapon
     /// <summary>
     /// Gets or sets the Components.
     /// </summary>
-    public IList<WeaponWeaponComponent> WeaponWeaponComponents { get; set; } = new List<WeaponWeaponComponent>();
+    public List<WeaponWeaponComponent> WeaponWeaponComponents { get; set; }
 
     /// <summary>
     /// Gets or sets the LoadoutWeapon.
     /// </summary>
-    public IList<LoadoutWeapon> LoadoutWeapons { get; set; } = new List<LoadoutWeapon>();
+    public List<LoadoutWeapon> LoadoutWeapons { get; set; }
 
     /// <summary>
     /// Adds a weapon component to a weapon.

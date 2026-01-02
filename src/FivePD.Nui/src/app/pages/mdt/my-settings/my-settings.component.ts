@@ -127,7 +127,7 @@ export class MySettingsComponent implements OnInit {
         title: 'LABEL.CALLSIGN.EDIT'
       }, new Map()
         .set(CALLSIGN_FORMAT_ITEMS, this.department?.CallsignFormat)
-        .set(CALLSIGN_FORMAT_VALUES, this.user?.User?.CallsignFormat.Values)
+        .set(CALLSIGN_FORMAT_VALUES, this.user?.User?.CallsignFormat.FormatValues)
     ).result
       .pipe(
         filter(res => res.success),

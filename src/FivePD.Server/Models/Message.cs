@@ -1,12 +1,10 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FivePD.Server.Models;
 
 /// <summary>
 /// Represents a message sent by a player or an addon.
 /// </summary>
-[Table("fivepd_messages")]
 public class Message
 {
     /// <summary>
@@ -38,7 +36,12 @@ public class Message
     /// <summary>
     /// Gets or sets a value indicating whether the message has been read.
     /// </summary>
-    public bool Read { get; set; }
+    public bool HasRead { get; set; }
+
+    /// <summary>
+    /// Gets or sets the user identifier.
+    /// </summary>
+    public int UserId { get; set; }
 
     /// <summary>
     /// Gets or sets the user the message was sent to.

@@ -30,7 +30,7 @@
               (click)="onMessageClick(message)"
             >
               <div class="absolute top-0 left-0 w-[4px] h-full transition-none"
-                   [ngClass]="[message.Read ? 'bg-transparent' : 'bg-primary', $first ? 'rounded-tl-lg' : '']"></div>
+                   [ngClass]="[message.HasRead ? 'bg-transparent' : 'bg-primary', $first ? 'rounded-tl-lg' : '']"></div>
               <div class="w-full flex flex-row items-center justify-between">
                 <p class="text-zinc-200 font-medium text-left text-lg">
                   {{ message.Sender }}
@@ -40,7 +40,7 @@
                 </p>
               </div>
               <p class="line-clamp-1 font-medium text-left text-xl transition-none"
-                 [ngClass]="message.Read ? 'text-zinc-200' : 'text-primary'">
+                 [ngClass]="message.HasRead ? 'text-zinc-200' : 'text-primary'">
                 {{ message.Subject }}
               </p>
               <p class="line-clamp-1 text-zinc-400 text-left">

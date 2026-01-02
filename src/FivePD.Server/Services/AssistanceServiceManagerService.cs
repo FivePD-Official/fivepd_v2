@@ -12,7 +12,7 @@ using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 using FivePD.Server.Models.AssistanceServiceModels;
-using Microsoft.EntityFrameworkCore;
+using FivePD.Server.Repositories;
 using Serilog;
 
 namespace FivePD.Server.Services;
@@ -27,7 +27,9 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
     private readonly IRandomService _randomService;
     private readonly IVector3Service _vector3Service;
     private readonly IAssistanceServiceConfigService _assistanceServiceConfigService;
-    private readonly IDatabaseContextFactory _dbContextFactory;
+    private readonly AssistanceServiceStationRepository _assistanceServiceStationRepository;
+    private readonly AssistanceServiceStationTypeConfigRepository _assistanceServiceStationTypeConfigRepository;
+    private readonly AssistanceServiceTypeConfigRepository _assistanceServiceTypeConfigRepository;
 
     private readonly ConcurrentDictionary<Guid, AssistanceServiceInvoker> _activeServices = new();
 
@@ -40,7 +42,9 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
     /// <param name="randomService">The <see cref="IRandomService"/> to use.</param>
     /// <param name="vector3Service">The <see cref="IVector3Service"/> to use.</param>
     /// <param name="assistanceServiceConfigService">The <see cref="IAssistanceServiceConfigService"/> to use.</param>
-    /// <param name="dbContextFactory">The <see cref="IDatabaseContextFactory"/> to use.</param>
+    /// <param name="assistanceServiceStationRepository">The <see cref="AssistanceServiceStationRepository"/> to use.</param>
+    /// <param name="assistanceServiceStationTypeConfigRepository">The <see cref="AssistanceServiceStationTypeConfigRepository"/> to use.</param>
+    /// <param name="assistanceServiceTypeConfigRepository">The <see cref="AssistanceServiceTypeConfigRepository"/> to use.</param>
     public AssistanceServiceManagerService(
         IServiceProvider serviceProvider,
         ITickQueueService tickQueueService,
@@ -48,7 +52,9 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
         IRandomService randomService,
         IVector3Service vector3Service,
         IAssistanceServiceConfigService assistanceServiceConfigService,
-        IDatabaseContextFactory dbContextFactory)
+        AssistanceServiceStationRepository assistanceServiceStationRepository,
+        AssistanceServiceStationTypeConfigRepository assistanceServiceStationTypeConfigRepository,
+        AssistanceServiceTypeConfigRepository assistanceServiceTypeConfigRepository)
     {
         this._serviceProvider = serviceProvider;
         this._tickQueueService = tickQueueService;
@@ -56,7 +62,9 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
         this._randomService = randomService;
         this._vector3Service = vector3Service;
         this._assistanceServiceConfigService = assistanceServiceConfigService;
-        this._dbContextFactory = dbContextFactory;
+        this._assistanceServiceStationRepository = assistanceServiceStationRepository;
+        this._assistanceServiceStationTypeConfigRepository = assistanceServiceStationTypeConfigRepository;
+        this._assistanceServiceTypeConfigRepository = assistanceServiceTypeConfigRepository;
     }
 
     /// <inheritdoc />
@@ -134,10 +142,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             var typeName = type.Name;
             var assemblyName = type.Assembly.GetName().Name;
 
-            await using var databaseContext = this._dbContextFactory.CreateScope().Context;
-
-            var assistanceServiceVehicleConfig = databaseContext.AssistanceServiceTypeConfigs
-                .FirstOrDefault(x => x.TypeName == typeName && x.AssemblyName == assemblyName);
+            var assistanceServiceVehicleConfig = this._assistanceServiceTypeConfigRepository.GetByTypeNameAndAssembly(typeName, assemblyName);
             if (assistanceServiceVehicleConfig is null)
             {
                 this._logger.Error("Could not find database entry for assistance service with type \"{Type}\".", type);
@@ -166,10 +171,8 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             }
             else if (assistanceServiceVehicleConfig.SpawnTypeStation())
             {
-                var stations = databaseContext.AssistanceServiceStations
-                    .Include(x => x.TypeConfigs)
-                    .ThenInclude(x => x.TypeConfig)
-                    .ToList();
+                var stations = this._assistanceServiceStationRepository.GetAllWithDynamicRelated(
+                    new AssistanceServiceStationRepository.AssistanceServiceStationLoadOptions { IncludeVehicleTypeConfigs = true });
                 var orderedStations = stations.OrderBy(s => s.Position.DistanceToSquared(requestedBy.GetUnderlyingPlayer().Character.Position));
 
                 foreach (var station in orderedStations)
@@ -196,7 +199,9 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
                 else
                 {
                     selectedStationTypeConfig.ActiveCapacity++;
-                    await databaseContext.SaveChangesAsync();
+                    this._assistanceServiceStationTypeConfigRepository.Update(
+                        selectedStationTypeConfig,
+                        x => { x.ActiveCapacity = selectedStationTypeConfig.ActiveCapacity; });
 
                     ((IInternalAssistanceService)assistanceService).SpawnLocation = selectedStation.Position;
                     ((IInternalAssistanceService)assistanceService).SpawnHeading = 0f; // TODO
@@ -274,10 +279,7 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             return activeService;
         }
 
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-
-        var assistanceServiceVehicleConfig = databaseContext.AssistanceServiceStationTypeConfigs
-            .FirstOrDefault(x => x.Id == activeService.StationTypeConfig.Id);
+        var assistanceServiceVehicleConfig = this._assistanceServiceStationTypeConfigRepository.FindById(activeService.StationTypeConfig.Id);
         if (assistanceServiceVehicleConfig is null)
         {
             return activeService;
@@ -290,7 +292,10 @@ public class AssistanceServiceManagerService : IAssistanceServiceManagerService,
             assistanceServiceVehicleConfig.ActiveCapacity = 0;
         }
 
-        databaseContext.SaveChanges();
+        this._assistanceServiceStationTypeConfigRepository.Update(
+            assistanceServiceVehicleConfig,
+            x => { x.ActiveCapacity = assistanceServiceVehicleConfig.ActiveCapacity; });
+
         return activeService;
     }
 

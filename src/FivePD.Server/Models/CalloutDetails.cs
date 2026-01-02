@@ -1,12 +1,10 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FivePD.Server.Models;
 
 /// <summary>
 /// Represents the details of a callout.
 /// </summary>
-[Table("fivepd_callout_details")]
 public class CalloutDetails
 {
     /// <summary>
@@ -37,5 +35,5 @@ public class CalloutDetails
     /// <summary>
     /// Gets or sets the departments associated with the callout.
     /// </summary>
-    public IList<CalloutDetailsDepartment> CalloutDetailsDepartments { get; set; }
+    public List<CalloutDetailsDepartment> CalloutDetailsDepartments { get; set; } = new();
 }

@@ -12,7 +12,7 @@ export interface WithStringId {
 }
 
 export interface UserCallsignFormat extends WithId {
-  Values: string[];
+  FormatValues: string[];
 }
 
 export interface User extends WithId {
@@ -99,6 +99,7 @@ export interface LoadoutConfig extends WithId {
   Name: string;
   LoadoutWeapons: [];
   WeaponIds: number[];
+  LoadoutWeaponCount?: number;
   // Department: User["DepartmentId"]; TODO
   // Division: Division["Name"]; TODO
 }
@@ -108,6 +109,7 @@ export interface Weapon extends WithId {
   Model: string;
   WeaponWeaponComponents: [];
   WeaponComponentHashes: [];
+  WeaponWeaponComponentCount?: number;
   // Department: User["DepartmentId"]; TODO
   // Division: Division["Name"]; TODO
 }
@@ -224,7 +226,7 @@ export interface PedData extends WithId {
   Birthdate: string;
   Warrants: string[];
   Licenses: PedLicense[];
-  VehicleData?: VehicleData;
+  VehicleData: VehicleData[];
 }
 
 export enum PedLicenseStatus {
@@ -249,7 +251,7 @@ export interface Message {
   Content: string;
   Sender: string;
   SentAt: string;
-  Read: boolean;
+  HasRead: boolean;
 }
 
 export enum CalloutDetailsRulesetType {

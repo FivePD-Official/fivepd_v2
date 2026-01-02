@@ -48,12 +48,12 @@ export class DropdownRectHelperDirective {
     when these are used the modal cannot be scrolled when the dropdown is opened
      */
 
-    // if (modalRect) {
-    //   top = parentRect.top - modalRect.top + selectedItemRect.height;
-    // } else {
-    //   top = parentRect.top - selectedItemRect.height;
-    // }
+    if (modalRect) {
+      top = parentRect.top - modalRect.top + selectedItemRect.height;
+    } else {
+      top = parentRect.top - selectedItemRect.height;
+    }
 
-    // this.elementRef.nativeElement.style.top = `${top}px`;
+    this.elementRef.nativeElement.style.top = `${top}px`;
   }
 }

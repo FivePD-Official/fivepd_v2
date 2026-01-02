@@ -5,6 +5,7 @@ using FivePD.Server.Database;
 using FivePD.Server.Extensions;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
+using FivePD.Server.Repositories;
 
 namespace FivePD.Server.Services;
 
@@ -13,17 +14,17 @@ namespace FivePD.Server.Services;
 public class PlayerHandlerService : IPlayerHandlerService
 {
     private readonly PlayerList _playerList;
-    private readonly IDatabaseContextFactory _dbContextFactory;
+    private readonly UserRepository _userRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlayerHandlerService"/> class.
     /// </summary>
     /// <param name="playerList">The player list.</param>
-    /// <param name="dbContextFactory">The database context factory.</param>
-    public PlayerHandlerService(PlayerList playerList, IDatabaseContextFactory dbContextFactory)
+    /// <param name="userRepository">The userrepository.</param>
+    public PlayerHandlerService(PlayerList playerList, UserRepository userRepository)
     {
         this._playerList = playerList;
-        this._dbContextFactory = dbContextFactory;
+        this._userRepository = userRepository;
     }
 
     /// <inheritdoc />
@@ -48,9 +49,6 @@ public class PlayerHandlerService : IPlayerHandlerService
     /// <inheritdoc />
     public User FindUserOfPlayer(Player player)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        return databaseContext.Users
-            .WhereAnyIdMatches(player)
-            .FirstOrDefault();
+        return this._userRepository.FindByLicense(player);
     }
 }

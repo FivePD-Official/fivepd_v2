@@ -2,12 +2,10 @@
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.Attributes;
-using FivePD.Server.Database;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models.LoadoutModels;
 using FivePD.Server.Models.Requests;
-using FivePD.Server.QueryHelpers;
-using Microsoft.EntityFrameworkCore;
+using FivePD.Server.Repositories;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Services;
@@ -17,22 +15,20 @@ namespace FivePD.Server.Services;
 [Obfuscate]
 public class WeaponComponentService : IWeaponComponentService
 {
-    private readonly IDatabaseContextFactory _dbContextFactory;
+    private readonly WeaponComponentRepository _weaponComponentRepository;
     private readonly INetworkEventService _networkEventService;
 
-    public WeaponComponentService(IDatabaseContextFactory dbContextFactory, INetworkEventService networkEventService)
+    public WeaponComponentService(WeaponComponentRepository weaponComponentRepository, INetworkEventService networkEventService)
     {
-        this._dbContextFactory = dbContextFactory;
+        this._weaponComponentRepository = weaponComponentRepository;
         this._networkEventService = networkEventService;
     }
 
     [UIEvent(Events.UI.WeaponComponent.Get)]
     private void GetById([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var weaponComponent = databaseContext.WeaponComponents.FirstOrDefault(x => x.Id == request.Id);
-
+        var weaponComponent = this._weaponComponentRepository.FindById(request.Id);
         if (weaponComponent is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
@@ -45,27 +41,20 @@ public class WeaponComponentService : IWeaponComponentService
     [UIEvent(Events.UI.WeaponComponent.GetAllPageable)]
     private void GetAllPageable([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<WeaponComponentsRequest>(serializedRequest);
-        var filters = new Filters<WeaponComponent>();
-        filters.Add(
-            !string.IsNullOrEmpty(request.Filters.Name),
-            wc => wc.Name.ToLower().Contains(request.Filters.Name.ToLower()));
-        filters.Add(
-            !string.IsNullOrEmpty(request.Filters.HashKey),
-            wc => wc.HashKey.ToLower().Contains(request.Filters.HashKey.ToLower()));
-        var page = databaseContext.WeaponComponents
-            .AsNoTracking()
-            .Paginate(request.Page, filters);
-
+        var page = this._weaponComponentRepository.Paginate(
+            request.Page,
+            b => b
+                .If(!string.IsNullOrEmpty(request.Filters.Name), x => x.WhereContains("Name", request.Filters.Name))
+                .If(!string.IsNullOrEmpty(request.Filters.HashKey), x => x.WhereContains("HashKey", request.Filters.HashKey)));
         this._networkEventService.TriggerEventSerialized(player, guid, page);
     }
 
     [UIEvent(Events.UI.WeaponComponent.GetAllSimple)]
     private void GetAllSimple([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
-        this._networkEventService.TriggerEventSerialized(player, guid, databaseContext.WeaponComponents.Select(x => new
+        var weaponComponents = this._weaponComponentRepository.GetAll();
+        this._networkEventService.TriggerEventSerialized(player, guid, weaponComponents.Select(x => new
         {
             Id = x.Id,
             Name = x.Name,
@@ -76,13 +65,10 @@ public class WeaponComponentService : IWeaponComponentService
     [UIEvent(Events.UI.WeaponComponent.Create)]
     private void Create([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<AddWeaponComponentRequest>(serializedRequest);
 
-        var weaponComponent = new WeaponComponent() { Name = request.Name, HashKey = request.HashKey };
-
-        databaseContext.WeaponComponents.Add(weaponComponent);
-        databaseContext.SaveChanges();
+        var weaponComponent = new WeaponComponent { Name = request.Name, HashKey = request.HashKey };
+        this._weaponComponentRepository.Add(weaponComponent);
 
         this._networkEventService.TriggerEventWithResponse(
             player,
@@ -95,9 +81,8 @@ public class WeaponComponentService : IWeaponComponentService
     [UIEvent(Events.UI.WeaponComponent.Edit)]
     private void Edit([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<EditWeaponComponentRequest>(serializedRequest);
-        var weaponComponent = databaseContext.WeaponComponents.FirstOrDefault(x => x.Id == request.Id);
+        var weaponComponent = this._weaponComponentRepository.FindById(request.Id);
 
         if (weaponComponent is null)
         {
@@ -105,10 +90,11 @@ public class WeaponComponentService : IWeaponComponentService
             return;
         }
 
-        weaponComponent.Name = request.Name;
-        weaponComponent.HashKey = request.HashKey;
-
-        databaseContext.SaveChanges();
+        this._weaponComponentRepository.Update(weaponComponent, x =>
+        {
+            x.Name = request.Name;
+            x.HashKey = request.HashKey;
+        });
         this._networkEventService.TriggerEventWithResponse(
             player,
             guid,
@@ -120,18 +106,15 @@ public class WeaponComponentService : IWeaponComponentService
     [UIEvent(Events.UI.WeaponComponent.Delete)]
     private void Delete([FromSource] Player player, string guid, string serializedRequest)
     {
-        using var databaseContext = this._dbContextFactory.CreateScope().Context;
         var request = JsonConvert.DeserializeObject<IdRequest>(serializedRequest);
-        var weaponComponent = databaseContext.WeaponComponents.FirstOrDefault(x => x.Id == request.Id);
-
+        var weaponComponent = this._weaponComponentRepository.FindById(request.Id);
         if (weaponComponent is null)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
             return;
         }
 
-        databaseContext.WeaponComponents.Remove(weaponComponent);
-        databaseContext.SaveChanges();
+        this._weaponComponentRepository.Delete(weaponComponent.Id);
         this._networkEventService.TriggerEventWithResponse(
             player,
             guid,

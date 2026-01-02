@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Common.Enums;
 using FivePD.Server.Utilities;
 
@@ -9,7 +8,6 @@ namespace FivePD.Server.Models;
 /// <summary>
 /// Represents an incident (callout or traffic stop) history.
 /// </summary>
-[Table("fivepd_incident_histories")]
 public class IncidentHistory
 {
     /// <summary>
@@ -55,5 +53,5 @@ public class IncidentHistory
     /// <summary>
     /// Gets or sets the users who were involved in this incident.
     /// </summary>
-    public IList<IncidentHistoryUser> Users { get; set; }
+    public List<IncidentHistoryUser> Users { get; set; } = new();
 }

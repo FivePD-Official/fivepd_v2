@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using FivePD.Server.Attributes;
 
 namespace FivePD.Server.Models.DTO;
@@ -12,7 +11,8 @@ internal class DepartmentResponse : Department
     /// Initializes a new instance of the <see cref="DepartmentResponse"/> class.
     /// </summary>
     /// <param name="department">The <see cref="Department"/> to create this instance from.</param>
-    public DepartmentResponse(Department department)
+    /// <param name="userCount">The number of users.</param>
+    public DepartmentResponse(Department department, int userCount)
     {
         this.Id = department.Id;
         this.Name = department.Name;
@@ -22,8 +22,7 @@ internal class DepartmentResponse : Department
         this.Divisions = department.Divisions;
         this.DepartmentRanks = new List<DepartmentRank>();
         this.Users = new List<User>();
-
-        this.UserCount = department.Users.Count();
+        this.UserCount = userCount;
     }
 
     /// <summary>
