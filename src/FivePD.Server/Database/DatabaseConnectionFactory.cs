@@ -60,7 +60,7 @@ public class DatabaseConnectionFactory : IDatabaseConnectionFactory
     /// <inheritdoc />
     public IDatabaseConnectionScope CreateScope()
     {
-        return new DatabaseConnectionScope(this._connectionString, this._databaseType);
+        return new DatabaseConnectionScope(this._connectionString, this._logger, this._databaseType);
     }
 
     private void LoadSqliteDll()

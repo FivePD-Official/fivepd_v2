@@ -1,8 +1,8 @@
 using System;
 using System.Data;
 using System.Data.SQLite;
-using FivePD.Server.Interfaces;
 using MySqlConnector;
+using Serilog;
 
 namespace FivePD.Server.Database;
 
@@ -17,6 +17,7 @@ public class DatabaseConnectionScope : IDatabaseConnectionScope
 #pragma warning restore S3881
 {
     private readonly string _connectionString;
+    private readonly ILogger _logger;
     private readonly DatabaseType _databaseType;
 
     private IDbConnection _connection;
@@ -26,10 +27,12 @@ public class DatabaseConnectionScope : IDatabaseConnectionScope
     /// Initializes a new instance of the <see cref="DatabaseConnectionScope"/> class.
     /// </summary>
     /// <param name="connectionString">The database connection string.</param>
+    /// <param name="logger">The <see cref="ILogger"/> to use.</param>
     /// <param name="databaseType">The type of database.</param>
-    public DatabaseConnectionScope(string connectionString, DatabaseType databaseType)
+    public DatabaseConnectionScope(string connectionString, ILogger logger, DatabaseType databaseType)
     {
         this._connectionString = connectionString;
+        this._logger = logger;
         this._databaseType = databaseType;
         this._disposed = false;
     }
@@ -51,12 +54,12 @@ public class DatabaseConnectionScope : IDatabaseConnectionScope
                 switch (this._databaseType)
                 {
                     case DatabaseType.SQLite:
-                        this._connection = new SQLiteConnection(_connectionString);
+                        this._connection = new ResilientConnection(new SQLiteConnection(_connectionString), this._logger);
                         break;
                     case DatabaseType.MySql:
                     case DatabaseType.MariaDb:
                     default:
-                        this._connection = new MySqlConnection(this._connectionString);
+                        this._connection = new ResilientConnection(new MySqlConnection(this._connectionString), this._logger);
                         break;
                 }
 
