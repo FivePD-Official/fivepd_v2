@@ -1,29 +1,25 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using CitizenFX.Core;
+﻿using System.Data;
 using Dapper;
-using FivePD.Server.Database;
-using FivePD.Server.Database.Sql;
 using FivePD.Server.Database.Sql.Migration;
 
 namespace FivePD.Server.Database.Migrations;
 
 #pragma warning disable
 
-public class CreateUsersTable_20251228 : IMigration
+public class Initial20251228 : IMigration
 {
-    public string Id => "20251228_001";
-    public string Description => "Create user-related tables";
+    public string Id => "20251228";
 
-    public void Up(IDbConnection connection, DatabaseType databaseType)
+    public string Description => "Create all tables";
+
+    public void Up(IDbConnection connection)
     {
-        new TableBuilder(connection, databaseType, TableNames.UserCallsigns)
+        new TableBuilder(connection, TableNames.UserCallsigns)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("FormatValues", x => x.Text())
             .Execute();
-        
-        new TableBuilder(connection, databaseType, TableNames.Departments)
+
+        new TableBuilder(connection, TableNames.Departments)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("Name", x => x.Varchar(255).NotNull())
             .Column("Callsign", x => x.Varchar(50).NotNull())
@@ -33,16 +29,16 @@ public class CreateUsersTable_20251228 : IMigration
             .Column("DefaultRankId", x => x.Integer())
             .Index("idx_departments_name", "Name")
             .Execute();
-  
-        new TableBuilder(connection, databaseType, TableNames.Ranks)
+
+        new TableBuilder(connection, TableNames.Ranks)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("Global", x => x.Boolean().NotNull().Default(0))
             .Column("RequiredXp", x => x.Integer().NotNull().Default(0))
             .Column("Name", x => x.Varchar(255).NotNull())
             .Column("Permission", x => x.Text())
             .Execute();
-             
-        new TableBuilder(connection, databaseType, TableNames.Divisions)
+
+        new TableBuilder(connection, TableNames.Divisions)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("Name", x => x.Varchar(255).NotNull())
             .Column("DepartmentId", x => x.Integer())
@@ -50,7 +46,7 @@ public class CreateUsersTable_20251228 : IMigration
             .ForeignKey("DepartmentId", x => x.References(TableNames.Departments, "Id").OnDeleteCascade())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.DepartmentRanks)
+        new TableBuilder(connection, TableNames.DepartmentRanks)
             .Column("DepartmentId", x => x.Integer().NotNull())
             .Column("RankId", x => x.Integer().NotNull())
             .ForeignKey("DepartmentId", x => x.References(TableNames.Departments, "Id").OnDeleteCascade())
@@ -58,7 +54,7 @@ public class CreateUsersTable_20251228 : IMigration
             .PrimaryKey("DepartmentId", "RankId")
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.DepartmentAreaCoordinates)
+        new TableBuilder(connection, TableNames.DepartmentAreaCoordinates)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("DepartmentId", x => x.Integer())
             .Column("X", x => x.Float().NotNull())
@@ -67,7 +63,7 @@ public class CreateUsersTable_20251228 : IMigration
             .ForeignKey("DepartmentId", x => x.References(TableNames.Departments, "Id").OnDeleteCascade())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.IncidentHistories)
+        new TableBuilder(connection, TableNames.IncidentHistories)
             .Column("Id", x => x.Varchar(255).PrimaryKey())
             .Column("IncidentId", x => x.Varchar(255).NotNull())
             .Column("Title", x => x.Varchar(255).NotNull())
@@ -80,7 +76,7 @@ public class CreateUsersTable_20251228 : IMigration
             .Index("idx_incident_histories_generated_at", "GeneratedAt")
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.Users)
+        new TableBuilder(connection, TableNames.Users)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("AccessFivePD", x => x.Boolean().NotNull().Default(1))
             .Column("PreferredLanguage", x => x.Varchar(10))
@@ -113,7 +109,7 @@ public class CreateUsersTable_20251228 : IMigration
             .ForeignKey("RankId", x => x.References(TableNames.Ranks, "Id").OnDeleteSetNull())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.Messages)
+        new TableBuilder(connection, TableNames.Messages)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("Sender", x => x.Varchar(255).NotNull())
             .Column("Subject", x => x.Varchar(255).NotNull())
@@ -125,7 +121,7 @@ public class CreateUsersTable_20251228 : IMigration
             .ForeignKey("UserId", x => x.References(TableNames.Users, "Id").OnDeleteSetNull())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.IncidentHistoryUsers)
+        new TableBuilder(connection, TableNames.IncidentHistoryUsers)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("UserId", x => x.Integer().NotNull())
             .Column("IncidentHistoryId", x => x.Varchar(255).NotNull())
@@ -135,7 +131,7 @@ public class CreateUsersTable_20251228 : IMigration
             .ForeignKey("IncidentHistoryId", x => x.References(TableNames.IncidentHistories, "Id").OnDeleteCascade())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.PedData)
+        new TableBuilder(connection, TableNames.PedData)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("Gender", x => x.Integer().NotNull())
             .Column("Firstname", x => x.Varchar(255).NotNull())
@@ -147,7 +143,7 @@ public class CreateUsersTable_20251228 : IMigration
             .Column("Drugs", x => x.Text())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.PedLicenses)
+        new TableBuilder(connection, TableNames.PedLicenses)
             .Column("Id", x => x.Varchar(255).PrimaryKey())
             .Column("PedDataId", x => x.Integer().NotNull())
             .Column("Type", x => x.Integer().NotNull())
@@ -158,7 +154,7 @@ public class CreateUsersTable_20251228 : IMigration
             .ForeignKey("PedDataId", x => x.References(TableNames.PedData, "Id").OnDeleteCascade())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.VehicleData)
+        new TableBuilder(connection, TableNames.VehicleData)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("PedDataId", x => x.Integer())
             .Column("LicensePlate", x => x.Varchar(50).NotNull())
@@ -169,7 +165,7 @@ public class CreateUsersTable_20251228 : IMigration
             .ForeignKey("PedDataId", x => x.References(TableNames.PedData, "Id").OnDeleteSetNull())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.VehicleDocuments)
+        new TableBuilder(connection, TableNames.VehicleDocuments)
             .Column("Id", x => x.Varchar(255).PrimaryKey())
             .Column("VehicleDataId", x => x.Integer().NotNull())
             .Column("Type", x => x.Integer().NotNull())
@@ -180,7 +176,7 @@ public class CreateUsersTable_20251228 : IMigration
             .ForeignKey("VehicleDataId", x => x.References(TableNames.VehicleData, "Id").OnDeleteCascade())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.VehicleConfigs)
+        new TableBuilder(connection, TableNames.VehicleConfigs)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("Type", x => x.Integer().NotNull())
             .Column("Name", x => x.Varchar(255).NotNull())
@@ -190,7 +186,7 @@ public class CreateUsersTable_20251228 : IMigration
             .Column("Options", x => x.Text())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.CalloutDetails)
+        new TableBuilder(connection, TableNames.CalloutDetails)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("Active", x => x.Boolean().NotNull().Default(0))
             .Column("TypeName", x => x.Varchar(255).NotNull())
@@ -198,7 +194,7 @@ public class CreateUsersTable_20251228 : IMigration
             .Column("RulesetType", x => x.Integer().NotNull())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.CalloutDetailsDepartments)
+        new TableBuilder(connection, TableNames.CalloutDetailsDepartments)
             .Column("CalloutDetailsId", x => x.Integer().NotNull())
             .Column("DepartmentId", x => x.Integer().NotNull())
             .PrimaryKey("CalloutDetailsId", "DepartmentId")
@@ -206,18 +202,18 @@ public class CreateUsersTable_20251228 : IMigration
             .ForeignKey("DepartmentId", x => x.References(TableNames.Departments, "Id").OnDeleteCascade())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.VariableDataSets)
+        new TableBuilder(connection, TableNames.VariableDataSets)
             .Column("Id", x => x.Varchar(255).PrimaryKey())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.VariableDataEntities)
+        new TableBuilder(connection, TableNames.VariableDataEntities)
             .Column("Id", x => x.Varchar(255).PrimaryKey())
             .Column("SetId", x => x.Varchar(255).NotNull())
             .Index("idx_variable_data_entities_set", "SetId")
             .ForeignKey("SetId", x => x.References(TableNames.VariableDataSets, "Id").OnDeleteCascade())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.VariableDataAttributes)
+        new TableBuilder(connection, TableNames.VariableDataAttributes)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("SetId", x => x.Varchar(255).NotNull())
             .Column("DataType", x => x.Integer().NotNull())
@@ -236,7 +232,7 @@ public class CreateUsersTable_20251228 : IMigration
             .ForeignKey("SetId", x => x.References(TableNames.VariableDataSets, "Id").OnDeleteCascade())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.VariableDataValues)
+        new TableBuilder(connection, TableNames.VariableDataValues)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("AttributeId", x => x.Integer().NotNull())
             .Column("EntityId", x => x.Varchar(255).NotNull())
@@ -247,14 +243,14 @@ public class CreateUsersTable_20251228 : IMigration
             .ForeignKey("EntityId", x => x.References(TableNames.VariableDataEntities, "Id").OnDeleteCascade())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.Locations)
+        new TableBuilder(connection, TableNames.Locations)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("Name", x => x.Varchar(255).NotNull())
             .Column("Type", x => x.Integer().NotNull())
             .Column("Position", x => x.Text().NotNull())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.AssistanceServiceTypeConfigs)
+        new TableBuilder(connection, TableNames.AssistanceServiceTypeConfigs)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("TypeName", x => x.Varchar(255).NotNull())
             .Column("AssemblyName", x => x.Varchar(255).NotNull())
@@ -264,13 +260,13 @@ public class CreateUsersTable_20251228 : IMigration
             .Column("ManualSpawnLocations", x => x.Text())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.AssistanceServiceStations)
+        new TableBuilder(connection, TableNames.AssistanceServiceStations)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("Name", x => x.Varchar(255).NotNull())
             .Column("Position", x => x.Text().NotNull())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.AssistanceServiceStationTypeConfigs)
+        new TableBuilder(connection, TableNames.AssistanceServiceStationTypeConfigs)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("AssistanceServiceStationId", x => x.Integer().NotNull())
             .Column("TypeConfigId", x => x.Integer().NotNull())
@@ -282,24 +278,24 @@ public class CreateUsersTable_20251228 : IMigration
             .ForeignKey("AssistanceServiceStationId", x => x.References(TableNames.AssistanceServiceStations, "Id").OnDeleteCascade())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.Weapons)
+        new TableBuilder(connection, TableNames.Weapons)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("Name", x => x.Varchar(255).NotNull())
             .Column("Model", x => x.Varchar(255).NotNull())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.WeaponComponents)
+        new TableBuilder(connection, TableNames.WeaponComponents)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("Name", x => x.Varchar(255).NotNull())
             .Column("HashKey", x => x.Varchar(255).NotNull())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.LoadoutConfigs)
+        new TableBuilder(connection, TableNames.LoadoutConfigs)
             .Column("Id", x => x.Integer().AutoIncrement().PrimaryKey())
             .Column("Name", x => x.Varchar(255).NotNull())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.LoadoutWeapon)
+        new TableBuilder(connection, TableNames.LoadoutWeapon)
             .Column("LoadoutConfigId", x => x.Integer().NotNull())
             .Column("WeaponId", x => x.Integer().NotNull())
             .PrimaryKey("LoadoutConfigId", "WeaponId")
@@ -307,7 +303,7 @@ public class CreateUsersTable_20251228 : IMigration
             .ForeignKey("WeaponId", x => x.References(TableNames.Weapons, "Id").OnDeleteCascade())
             .Execute();
 
-        new TableBuilder(connection, databaseType, TableNames.WeaponWeaponComponent)
+        new TableBuilder(connection, TableNames.WeaponWeaponComponent)
             .Column("WeaponId", x => x.Integer().NotNull())
             .Column("WeaponComponentId", x => x.Integer().NotNull())
             .PrimaryKey("WeaponId", "WeaponComponentId")
@@ -316,7 +312,7 @@ public class CreateUsersTable_20251228 : IMigration
             .Execute();
     }
 
-    public void Down(IDbConnection connection, DatabaseType databaseType)
+    public void Down(IDbConnection connection)
     {
         connection.Execute($"DROP TABLE IF EXISTS {TableNames.WeaponWeaponComponent}");
         connection.Execute($"DROP TABLE IF EXISTS {TableNames.LoadoutWeapon}");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Dapper;
+using FivePD.Server.Database.Sql.Dialect;
 
 namespace FivePD.Server.Database.Sql.Migration;
 
@@ -11,28 +12,26 @@ namespace FivePD.Server.Database.Sql.Migration;
 public class TableBuilder
 {
     private readonly IDbConnection _connection;
-    private readonly DatabaseType _dbType;
     private readonly string _tableName;
     private readonly List<ColumnBuilder> _columns = new();
     private readonly List<ForeignKeyBuilder> _foreignKeys = new();
     private readonly List<(string Name, string Column)> _indexes = new();
     private string[] _compositePrimaryKeys;
 
-    public TableBuilder(IDbConnection connection, DatabaseType dbType, string tableName)
+    public TableBuilder(IDbConnection connection, string tableName)
     {
         this._connection = connection;
-        this._dbType = dbType;
         this._tableName = tableName;
     }
 
     public TableBuilder Column(string name, Action<ColumnBuilder> setup)
     {
-        var column = new ColumnBuilder(name, this._dbType);
+        var column = new ColumnBuilder(name);
         setup(column);
         this._columns.Add(column);
         return this;
     }
-    
+
     public TableBuilder PrimaryKey(params string[] columns)
     {
         this._compositePrimaryKeys = columns;
@@ -75,11 +74,18 @@ public class TableBuilder
 
         foreach (var (name, col) in this._indexes)
         {
-            string indexSql = this._dbType == DatabaseType.SQLite 
+            string indexSql = SqlDialectRegistry.Type == DatabaseType.SQLite
                 ? $"CREATE INDEX IF NOT EXISTS `{name}` ON `{this._tableName}` (`{col}`);"
-                : $"CREATE INDEX `{name}` ON `{this._tableName}` (`{col}`);"; 
-            
-            try { this._connection.Execute(indexSql); } catch { /* Index exist handling */ }
+                : $"CREATE INDEX `{name}` ON `{this._tableName}` (`{col}`);";
+
+            try
+            {
+                this._connection.Execute(indexSql);
+            }
+            catch
+            {
+                /* Index exist handling */
+            }
         }
     }
 }

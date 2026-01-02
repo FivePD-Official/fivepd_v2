@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FivePD.Server.Database.Sql.Dialect;
 
 namespace FivePD.Server.Database.Sql.Migration;
 
@@ -7,17 +8,15 @@ namespace FivePD.Server.Database.Sql.Migration;
 public class ColumnBuilder
 {
     private readonly string _name;
-    private readonly DatabaseType _dbType;
     private string _type;
     private bool _isPrimaryKey;
     private bool _isAutoIncrement;
     private bool _isNotNull;
     private string _defaultValue;
 
-    public ColumnBuilder(string name, DatabaseType dbType)
+    public ColumnBuilder(string name)
     {
         this._name = name;
-        this._dbType = dbType;
     }
 
     public ColumnBuilder Integer()
@@ -34,13 +33,13 @@ public class ColumnBuilder
 
     public ColumnBuilder Varchar(int length = 0)
     {
-        this._type = this._dbType == DatabaseType.SQLite ? "TEXT" : $"VARCHAR({length})";
+        this._type = SqlDialectRegistry.Type == DatabaseType.SQLite ? "TEXT" : $"VARCHAR({length})";
         return this;
     }
 
     public ColumnBuilder LongText()
     {
-        this._type = this._dbType == DatabaseType.SQLite ? "TEXT" : "LONGTEXT";
+        this._type = SqlDialectRegistry.Type == DatabaseType.SQLite ? "TEXT" : "LONGTEXT";
         return this;
     }
 
@@ -52,19 +51,19 @@ public class ColumnBuilder
     
     public ColumnBuilder Float()
     {
-        this._type = this._dbType == DatabaseType.SQLite ? "REAL" : "FLOAT";
+        this._type = SqlDialectRegistry.Type == DatabaseType.SQLite ? "REAL" : "FLOAT";
         return this;
     }
 
     public ColumnBuilder DateTime()
     {
-        this._type = this._dbType == DatabaseType.SQLite ? "TEXT" : "DATETIME";
+        this._type = SqlDialectRegistry.Type == DatabaseType.SQLite ? "TEXT" : "DATETIME";
         return this;
     }
 
     public ColumnBuilder Boolean()
     {
-        this._type = this._dbType == DatabaseType.SQLite ? "INTEGER" : "TINYINT";
+        this._type = SqlDialectRegistry.Type == DatabaseType.SQLite ? "INTEGER" : "TINYINT";
         return this;
     }
 
@@ -95,7 +94,7 @@ public class ColumnBuilder
     public string Build()
     {
         // Handle the SQLite AUTOINCREMENT quirk immediately
-        if (this._isAutoIncrement && this._dbType == DatabaseType.SQLite)
+        if (this._isAutoIncrement && SqlDialectRegistry.Type == DatabaseType.SQLite)
         {
             return $"`{this._name}` INTEGER PRIMARY KEY AUTOINCREMENT";
         }

@@ -6,7 +6,7 @@ using System.Reflection;
 using CitizenFX.Core;
 using Dapper;
 using FivePD.Server.Database.Migrations;
-using FivePD.Server.Interfaces;
+using FivePD.Server.Database.Sql.Dialect;
 using Serilog;
 
 namespace FivePD.Server.Database;
@@ -21,7 +21,6 @@ public class DatabaseMigrationManager
 {
     private readonly IDatabaseConnectionFactory _dbConnectionFactory;
     private readonly ILogger _logger;
-    private readonly DatabaseType _databaseType;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DatabaseMigrationManager"/> class.
@@ -34,8 +33,7 @@ public class DatabaseMigrationManager
     {
         this._dbConnectionFactory = dbConnectionFactory;
         this._logger = logger;
-
-        this._databaseType = databaseType;
+        SqlDialectRegistry.SetDialect(databaseType);
     }
 
     /// <summary>
@@ -68,7 +66,7 @@ public class DatabaseMigrationManager
             try
             {
                 this._logger.Information("Applying migration: {migrationId} - {migrationDescription}", migration.Id, migration.Description);
-                migration.Up(connection, this._databaseType);
+                migration.Up(connection);
                 this.MarkMigrationAsApplied(connection, migration.Id, migration.Description);
                 this._logger.Information("Applied migration: {migrationId}", migration.Id);
             }
@@ -112,7 +110,7 @@ public class DatabaseMigrationManager
 
         try
         {
-            migration.Down(connection, this._databaseType);
+            migration.Down(connection);
             this.UnmarkMigration(connection, migrationId);
             this._logger.Information("Reverted migration: {migrationId}", migrationId);
         }
@@ -130,7 +128,7 @@ public class DatabaseMigrationManager
         string checkSql;
         string createSql;
 
-        if (this._databaseType == DatabaseType.SQLite)
+        if (SqlDialectRegistry.Type == DatabaseType.SQLite)
         {
             checkSql = $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{TableNames.FivePdMigrations}'";
             createSql = $@"
