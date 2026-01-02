@@ -179,7 +179,7 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
     /// </summary>
     /// <param name="page">The current page number.</param>
     /// <param name="configure">An optional action to configure the SQL query builder.</param>
-    /// <returns>A <see cref="Page{TEntity}"/> containing the paginated results, including items, total count, and pagination details.</returns>
+    /// <returns>A <see cref="Page{T}"/> containing the paginated results, including items, total count, and pagination details.</returns>
     public virtual Page<TEntity> Paginate(int page, Action<ISelectBuilder> configure = null)
     {
         var builder = SqlBuilder.From(this.TableName);

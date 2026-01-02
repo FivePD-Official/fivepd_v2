@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using FivePD.Server.Utilities;
 
 namespace FivePD.Server.Models.VariableData;
@@ -34,6 +33,5 @@ public class VariableDataEntity
     /// If adding or updating an entity this should be used
     /// instead of the <see cref="VariableDataEntity.Values"/> property.
     /// </summary>
-    [NotMapped]
-    public Dictionary<string, object> MappedValues { get; set; }
+    public Dictionary<string, object> MappedValues { get; set; } = new();
 }

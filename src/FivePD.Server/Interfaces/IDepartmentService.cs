@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using CitizenFX.Core;
-using FivePD.Server.EntityWrappers;
-using FivePD.Server.Exceptions;
 using FivePD.Server.Models;
 using FivePD.Server.Models.Events;
 

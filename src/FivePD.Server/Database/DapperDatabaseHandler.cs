@@ -2,7 +2,6 @@ using System;
 using System.Data;
 using Dapper;
 using FivePD.Server.Database.Sql.Dialect;
-using FivePD.Server.Exceptions;
 using FivePD.Server.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
@@ -38,7 +37,8 @@ internal static class DapperDatabaseHandler
 
         if (_dbConnectionFactory is null)
         {
-            throw new DatabaseUsageException("No database context factory is available for usage.");
+            _logger.Fatal("No database connection factory is available for usage.");
+            LifecycleHandler.Stop();
         }
 
         _migrationManager = new DatabaseMigrationManager(_dbConnectionFactory, logger, _configService.DatabaseType);

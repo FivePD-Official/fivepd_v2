@@ -7,7 +7,6 @@ using FivePD.Server.Database.Sql;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.UpdateModels;
-using FivePD.Server.QueryHelpers;
 
 namespace FivePD.Server.Repositories;
 

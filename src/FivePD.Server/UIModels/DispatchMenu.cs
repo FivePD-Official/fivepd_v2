@@ -13,7 +13,6 @@ using FivePD.Server.EntityWrappers.VehicleWrapper;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.UIModels.MenuModels;
-using Microsoft.Extensions.Primitives;
 
 namespace FivePD.Server.UIModels;
 

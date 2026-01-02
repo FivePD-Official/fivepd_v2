@@ -13,7 +13,6 @@ using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
 using FivePD.Server.Models.AssistanceServiceModels;
 using FivePD.Server.Repositories;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace FivePD.Server.Services;
