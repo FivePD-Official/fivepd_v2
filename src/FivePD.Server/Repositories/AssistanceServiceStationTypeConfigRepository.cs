@@ -19,7 +19,7 @@ public class AssistanceServiceStationTypeConfigRepository : BaseRepository<Assis
     /// Initializes a new instance of the <see cref="AssistanceServiceStationTypeConfigRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public AssistanceServiceStationTypeConfigRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public AssistanceServiceStationTypeConfigRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.AssistanceServiceStationTypeConfigs)
     {
     }

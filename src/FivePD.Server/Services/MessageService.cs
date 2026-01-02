@@ -28,7 +28,7 @@ public class MessageService : IMessageService
     private readonly IGameNotificationService _gameNotificationService;
     private readonly INetworkEventService _networkEventService;
     private readonly MessageRepository _messageRepository;
-    private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
+    private readonly IDatabaseConnectionFactory _dbConnectionFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageService"/> class.
@@ -37,14 +37,14 @@ public class MessageService : IMessageService
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="gameNotificationService">The <see cref="IGameNotificationService"/> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
-    /// <param name="dbDatabaseConnectionFactory">The <see cref="IDapperDatabaseConnectionFactory"/> to use.</param>
+    /// <param name="dbDatabaseConnectionFactory">The <see cref="IDatabaseConnectionFactory"/> to use.</param>
     public MessageService(
         IAddonMetadataService addonMetadataService,
         IPlayerHandlerService playerHandlerService,
         IGameNotificationService gameNotificationService,
         INetworkEventService networkEventService,
         MessageRepository messageRepository,
-        IDapperDatabaseConnectionFactory dbDatabaseConnectionFactory)
+        IDatabaseConnectionFactory dbDatabaseConnectionFactory)
     {
         this._addonMetadataService = (IInternalAddonMetadataService)addonMetadataService;
         this._playerHandlerService = playerHandlerService;

@@ -27,7 +27,7 @@ public class VariableDataEntityRepository : BaseRepository<VariableDataEntity, V
     /// <param name="variableDataAttributeRepository">The variable data attribute repository.</param>
     /// <param name="variableDataValueRepository">The variable data value repository.</param>
     public VariableDataEntityRepository(
-        IDapperDatabaseConnectionFactory dbConnectionFactory,
+        IDatabaseConnectionFactory dbConnectionFactory,
         VariableDataAttributeRepository variableDataAttributeRepository,
         VariableDataValueRepository variableDataValueRepository)
         : base(dbConnectionFactory, TableNames.VariableDataEntities)

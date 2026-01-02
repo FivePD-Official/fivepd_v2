@@ -89,18 +89,18 @@ internal class Bootstrapper : BaseScript
         this._phases.Add(new Phase("Initialize system", this.PerformInitializeSystemPhase), false);
 
         this._phases.Add(
-            new Phase("Database set parameters", () => DapperDatabaseHandler.SetParameters(this._provider, this._bootstrapLogger)),
+            new Phase("Database set parameters", () => DatabaseHandler.SetParameters(this._provider, this._bootstrapLogger)),
             false);
 
-        this._phases.Add(new Phase("Database ensure database config", DapperDatabaseHandler.EnsureDatabaseConfig), false);
+        this._phases.Add(new Phase("Database ensure database config", DatabaseHandler.EnsureDatabaseConfig), false);
 
-        this._phases.Add(new Phase("Database ensure database exists", DapperDatabaseHandler.EnsureDatabaseExists), false);
+        this._phases.Add(new Phase("Database ensure database exists", DatabaseHandler.EnsureDatabaseExists), false);
 
-        this._phases.Add(new Phase("Database ensure connection", DapperDatabaseHandler.EnsureConnection), false);
+        this._phases.Add(new Phase("Database ensure connection", DatabaseHandler.EnsureConnection), false);
 
-        this._phases.Add(new Phase("Database ensure schema", DapperDatabaseHandler.EnsureSchema), false);
+        this._phases.Add(new Phase("Database ensure schema", DatabaseHandler.EnsureSchema), false);
 
-        this._phases.Add(new Phase("Database seed data", DapperDatabaseHandler.SeedData), false);
+        this._phases.Add(new Phase("Database seed data", DatabaseHandler.SeedData), false);
 
         this._phases.Add(new Phase("Service initialization", this.PerformServiceInitialization), false);
 
@@ -208,7 +208,7 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton(Log.Logger);
         services.AddSingleton(this.EventHandlers);
         services.AddSingleton(this.Players);
-        services.AddSingleton<IDapperDatabaseConnectionFactory, DapperConnectionFactory>();
+        services.AddSingleton<IDatabaseConnectionFactory, DatabaseConnectionFactory>();
 
         services.AddTransient<NetworkEventService>();
         services.AddTransient<INetworkEventService>(provider => provider.GetRequiredService<NetworkEventService>());

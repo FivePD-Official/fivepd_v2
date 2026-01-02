@@ -28,7 +28,7 @@ public class LoadoutConfigService : ILoadoutConfigService
     private readonly ILogger _logger;
     private readonly LoadoutConfigRepository _loadoutConfigRepository;
     private readonly WeaponRepository _weaponRepository;
-    private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
+    private readonly IDatabaseConnectionFactory _dbConnectionFactory;
     private readonly IMenuService _menuService;
     private readonly PlayerList _playerList;
     private readonly INetworkEventService _networkEventService;
@@ -37,7 +37,7 @@ public class LoadoutConfigService : ILoadoutConfigService
         ILogger logger,
         LoadoutConfigRepository loadoutConfigRepository,
         WeaponRepository weaponRepository,
-        IDapperDatabaseConnectionFactory dbConnectionFactory,
+        IDatabaseConnectionFactory dbConnectionFactory,
         IMenuService menuService,
         PlayerList playerList,
         INetworkEventService networkEventService)

@@ -16,7 +16,7 @@ public class VariableDataSetRepository : BaseRepository<VariableDataSet, Variabl
     private readonly VariableDataAttributeRepository _variableDataAttributeRepository;
     
     public VariableDataSetRepository(
-        IDapperDatabaseConnectionFactory dbConnectionFactory,
+        IDatabaseConnectionFactory dbConnectionFactory,
         VariableDataEntityRepository variableDataEntityRepository,
         VariableDataAttributeRepository variableDataAttributeRepository)
         : base(dbConnectionFactory, TableNames.VariableDataSets)

@@ -20,7 +20,7 @@ public class WeaponRepository : BaseRepository<Weapon, WeaponUpdate, int>
     /// Initializes a new instance of the <see cref="WeaponRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public WeaponRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public WeaponRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.Weapons)
     {
     }

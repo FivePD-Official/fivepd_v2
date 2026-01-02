@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Data;
 
-namespace FivePD.Server.Interfaces;
+namespace FivePD.Server.Database;
 
 #pragma warning disable
 
-public interface IDapperDatabaseConnectionScope : IDisposable
+public interface IDatabaseConnectionScope : IDisposable
 {
     /// <summary>
     /// Gets the database connection for Dapper operations.

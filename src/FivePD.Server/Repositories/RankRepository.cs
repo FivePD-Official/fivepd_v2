@@ -18,7 +18,7 @@ public class RankRepository : BaseRepository<Rank, RankUpdate, int>
     /// Initializes a new instance of the <see cref="RankRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public RankRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public RankRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.Ranks)
     {
     }

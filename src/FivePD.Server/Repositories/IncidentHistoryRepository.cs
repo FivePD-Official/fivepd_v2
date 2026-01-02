@@ -19,7 +19,7 @@ public class IncidentHistoryRepository : BaseRepository<IncidentHistory, Inciden
     /// Initializes a new instance of the <see cref="IncidentHistoryRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public IncidentHistoryRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public IncidentHistoryRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.IncidentHistories)
     {
     }

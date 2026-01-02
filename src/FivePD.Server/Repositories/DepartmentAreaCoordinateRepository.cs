@@ -18,7 +18,7 @@ public class DepartmentAreaCoordinateRepository : BaseRepository<DepartmentAreaC
     /// Initializes a new instance of the <see cref="DepartmentAreaCoordinateRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public DepartmentAreaCoordinateRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public DepartmentAreaCoordinateRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.DepartmentAreaCoordinates)
     {
     }

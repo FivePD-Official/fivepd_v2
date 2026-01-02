@@ -19,7 +19,7 @@ public class UserRepository : BaseRepository<User, UserUpdate, int>
     /// Initializes a new instance of the <see cref="UserRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public UserRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public UserRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.Users)
     {
     }

@@ -13,7 +13,7 @@ namespace FivePD.Server.Database;
 /// Provides a database connection that can be used for CRUD operations.
 /// </summary>
 #pragma warning disable S3881
-public class DapperConnectionScope : IDapperDatabaseConnectionScope
+public class DatabaseConnectionScope : IDatabaseConnectionScope
 #pragma warning restore S3881
 {
     private readonly string _connectionString;
@@ -23,11 +23,11 @@ public class DapperConnectionScope : IDapperDatabaseConnectionScope
     private bool _disposed;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DapperConnectionScope"/> class.
+    /// Initializes a new instance of the <see cref="DatabaseConnectionScope"/> class.
     /// </summary>
     /// <param name="connectionString">The database connection string.</param>
     /// <param name="databaseType">The type of database.</param>
-    public DapperConnectionScope(string connectionString, DatabaseType databaseType)
+    public DatabaseConnectionScope(string connectionString, DatabaseType databaseType)
     {
         this._connectionString = connectionString;
         this._databaseType = databaseType;
@@ -43,7 +43,7 @@ public class DapperConnectionScope : IDapperDatabaseConnectionScope
         {
             if (this._disposed)
             {
-                throw new ObjectDisposedException(nameof(DapperConnectionScope));
+                throw new ObjectDisposedException(nameof(DatabaseConnectionScope));
             }
 
             if (this._connection is null)

@@ -32,7 +32,7 @@ public class DepartmentService : IDepartmentService
     private readonly IPlayerDataService _playerDataService;
     private readonly IPlayerHandlerService _playerHandlerService;
     private readonly INetworkEventService _networkEventService;
-    private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
+    private readonly IDatabaseConnectionFactory _dbConnectionFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DepartmentService"/> class.
@@ -45,7 +45,7 @@ public class DepartmentService : IDepartmentService
     /// <param name="playerDataService">The <see cref="PlayerDataService"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="PlayerHandlerService"/> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
-    /// <param name="dbConnectionFactory">The <see cref="IDapperDatabaseConnectionFactory"/> to use.</param>
+    /// <param name="dbConnectionFactory">The <see cref="IDatabaseConnectionFactory"/> to use.</param>
     public DepartmentService(
         DepartmentRepository departmentRepository,
         UserRepository userRepository,
@@ -55,7 +55,7 @@ public class DepartmentService : IDepartmentService
         IPlayerDataService playerDataService,
         IPlayerHandlerService playerHandlerService,
         INetworkEventService networkEventService,
-        IDapperDatabaseConnectionFactory dbConnectionFactory)
+        IDatabaseConnectionFactory dbConnectionFactory)
     {
         this._departmentRepository = departmentRepository;
         this._userRepository = userRepository;

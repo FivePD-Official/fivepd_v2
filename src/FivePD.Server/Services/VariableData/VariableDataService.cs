@@ -33,7 +33,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
     private readonly VariableDataValueRepository _variableDataValueRepository;
     private readonly IPlayerHandlerService _playerHandlerService;
     private readonly INetworkEventService _networkEventService;
-    private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
+    private readonly IDatabaseConnectionFactory _dbConnectionFactory;
 
     private readonly List<VariableDataEntityObservable> _observables = new();
     private readonly Dictionary<Type, string> _activeSetTypes = new();
@@ -48,7 +48,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
     /// <param name="variableDataValueRepository">The <see cref="VariableDataValueRepository"/> to use.</param>
     /// <param name="playerHandlerService">The <see cref="IPlayerHandlerService"/> to use.</param>
     /// <param name="networkEventService">The <see cref="INetworkEventService"/> to use.</param>
-    /// <param name="dbConnectionFactory">The <see cref="IDapperDatabaseConnectionFactory"/> to use.</param>
+    /// <param name="dbConnectionFactory">The <see cref="IDatabaseConnectionFactory"/> to use.</param>
     public VariableDataService(
         VariableDataSetRepository variableDataSetRepository,
         VariableDataEntityRepository variableDataEntityRepository,
@@ -56,7 +56,7 @@ public class VariableDataService : IVariableDataService, IInternalVariableDataSe
         VariableDataValueRepository variableDataValueRepository,
         IPlayerHandlerService playerHandlerService,
         INetworkEventService networkEventService,
-        IDapperDatabaseConnectionFactory dbConnectionFactory)
+        IDatabaseConnectionFactory dbConnectionFactory)
     {
         this._variableDataSetRepository = variableDataSetRepository;
         this._variableDataEntityRepository = variableDataEntityRepository;

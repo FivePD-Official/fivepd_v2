@@ -18,7 +18,7 @@ internal class SeedDataHandler
 {
     private readonly ServiceProvider _serviceProvider;
     private readonly ILogger _logger;
-    private readonly IDapperDatabaseConnectionFactory _connectionFactory;
+    private readonly IDatabaseConnectionFactory _connectionFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SeedDataHandler"/> class.
@@ -26,7 +26,7 @@ internal class SeedDataHandler
     /// <param name="serviceProvider">The service provider for dependency injection.</param>
     /// <param name="logger">The logger for logging operations.</param>
     /// <param name="connectionFactory">The database connection factory for creating database connections.</param>
-    public SeedDataHandler(ServiceProvider serviceProvider, ILogger logger, IDapperDatabaseConnectionFactory connectionFactory)
+    public SeedDataHandler(ServiceProvider serviceProvider, ILogger logger, IDatabaseConnectionFactory connectionFactory)
     {
         this._serviceProvider = serviceProvider;
         this._logger = logger;

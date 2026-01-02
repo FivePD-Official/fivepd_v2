@@ -20,7 +20,7 @@ public class LoadoutConfigRepository : BaseRepository<LoadoutConfig, LoadoutConf
     /// Initializes a new instance of the <see cref="LoadoutConfigRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public LoadoutConfigRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public LoadoutConfigRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.LoadoutConfigs)
     {
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using CitizenFX.Core;
 using FivePD.Common;
 using FivePD.Server.Attributes;
+using FivePD.Server.Database;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Interfaces.Lifecycle;
 using FivePD.Server.Models;
@@ -23,7 +24,7 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
     private readonly AssistanceServiceTypeConfigRepository _assistanceServiceTypeConfigRepository;
     private readonly AssistanceServiceStationRepository _assistanceServiceStationRepository;
     private readonly AssistanceServiceStationTypeConfigRepository _assistanceServiceStationTypeConfigRepository;
-    private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
+    private readonly IDatabaseConnectionFactory _dbConnectionFactory;
 
     private readonly List<AvailableAssistanceService> _availableServices = new();
     private readonly List<Type> _registrationOrder = new();
@@ -36,14 +37,14 @@ public class AssistanceServiceConfigService : IOnInit, IAssistanceServiceConfigS
     /// <param name="assistanceServiceTypeConfigRepository">The <see cref="AssistanceServiceTypeConfigRepository"/> to use.</param>
     /// <param name="assistanceServiceStationRepository">The <see cref="AssistanceServiceStationRepository"/> to use.</param>
     /// <param name="assistanceServiceStationTypeConfigRepository">The <see cref="AssistanceServiceStationTypeConfigRepository"/> to use.</param>
-    /// <param name="dbConnectionFactory">The <see cref="IDapperDatabaseConnectionFactory"/> to use.</param>
+    /// <param name="dbConnectionFactory">The <see cref="IDatabaseConnectionFactory"/> to use.</param>
     public AssistanceServiceConfigService(
         ILogger logger,
         INetworkEventService networkEventService,
         AssistanceServiceTypeConfigRepository assistanceServiceTypeConfigRepository,
         AssistanceServiceStationRepository assistanceServiceStationRepository,
         AssistanceServiceStationTypeConfigRepository assistanceServiceStationTypeConfigRepository,
-        IDapperDatabaseConnectionFactory dbConnectionFactory)
+        IDatabaseConnectionFactory dbConnectionFactory)
     {
         this._logger = logger;
         this._networkEventService = networkEventService;

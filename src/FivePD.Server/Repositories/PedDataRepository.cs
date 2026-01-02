@@ -20,7 +20,7 @@ public class PedDataRepository : BaseRepository<PedData, PedDataUpdate, int>
     /// Initializes a new instance of the <see cref="PedDataRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public PedDataRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public PedDataRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.PedData)
     {
     }

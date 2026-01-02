@@ -22,13 +22,13 @@ public class WeaponService : IWeaponService
 {
     private readonly WeaponRepository _weaponRepository;
     private readonly WeaponComponentRepository _weaponComponentRepository;
-    private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
+    private readonly IDatabaseConnectionFactory _dbConnectionFactory;
     private readonly INetworkEventService _networkEventService;
 
     public WeaponService(
         WeaponRepository weaponRepository,
         WeaponComponentRepository weaponComponentRepository,
-        IDapperDatabaseConnectionFactory dbConnectionFactory,
+        IDatabaseConnectionFactory dbConnectionFactory,
         INetworkEventService networkEventService)
     {
         this._weaponRepository = weaponRepository;

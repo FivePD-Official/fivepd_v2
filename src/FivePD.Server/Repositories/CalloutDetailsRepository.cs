@@ -19,7 +19,7 @@ public class CalloutDetailsRepository : BaseRepository<CalloutDetails, CalloutDe
     /// Initializes a new instance of the <see cref="CalloutDetailsRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public CalloutDetailsRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public CalloutDetailsRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.CalloutDetails)
     {
     }

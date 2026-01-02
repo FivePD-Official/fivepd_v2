@@ -1,10 +1,10 @@
-﻿namespace FivePD.Server.Interfaces;
+﻿namespace FivePD.Server.Database;
 
 /// <summary>
 /// A factory for creating scoped database contexts.
 /// Use this to safely access the database from singleton services.
 /// </summary>
-public interface IDapperDatabaseConnectionFactory
+public interface IDatabaseConnectionFactory
 {
     /// <summary>
     /// Gets the connection string used to establish a database connection.
@@ -16,6 +16,6 @@ public interface IDapperDatabaseConnectionFactory
     /// <summary>
     /// Creates a new scope and resolves a database context within it.
     /// </summary>
-    /// <returns>A new <see cref="IDapperDatabaseConnectionScope"/>.</returns>
-    IDapperDatabaseConnectionScope CreateScope();
+    /// <returns>A new <see cref="IDatabaseConnectionScope"/>.</returns>
+    IDatabaseConnectionScope CreateScope();
 }

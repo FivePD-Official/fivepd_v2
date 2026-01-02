@@ -20,7 +20,7 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
     where TEntityUpdate : ChangeTracker
 {
 #pragma warning disable
-    protected readonly IDapperDatabaseConnectionFactory DbConnectionFactory;
+    protected readonly IDatabaseConnectionFactory DbConnectionFactory;
     protected readonly string TableName;
     protected readonly string IdColumn = "Id";
 #pragma warning restore
@@ -29,7 +29,7 @@ public abstract class BaseRepository<TEntity, TEntityUpdate, TId>
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
     /// <param name="tableName">The name of the database table.</param>
-    protected BaseRepository(IDapperDatabaseConnectionFactory dbConnectionFactory, string tableName)
+    protected BaseRepository(IDatabaseConnectionFactory dbConnectionFactory, string tableName)
     {
         this.DbConnectionFactory = dbConnectionFactory;
         this.TableName = tableName;

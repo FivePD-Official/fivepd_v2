@@ -17,7 +17,7 @@ public class LocationRepository : BaseRepository<Location, LocationUpdate, int>
     /// Initializes a new instance of the <see cref="LocationRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public LocationRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public LocationRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.Locations)
     {
     }

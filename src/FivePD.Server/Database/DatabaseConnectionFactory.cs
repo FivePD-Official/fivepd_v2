@@ -32,7 +32,7 @@ public static class SqliteNativeLoader
 /// Factory for creating database connections using Dapper.
 /// Supports MySQL, MariaDB, and SQLite.
 /// </summary>
-public class DapperConnectionFactory : IDapperDatabaseConnectionFactory
+public class DatabaseConnectionFactory : IDatabaseConnectionFactory
 {
     private readonly ILogger _logger;
     private readonly IConfigService _configService;
@@ -41,11 +41,11 @@ public class DapperConnectionFactory : IDapperDatabaseConnectionFactory
     private readonly string _connectionString;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DapperConnectionFactory"/> class.
+    /// Initializes a new instance of the <see cref="DatabaseConnectionFactory"/> class.
     /// </summary>
     /// <param name="logger">The logger for logging messages.</param>
     /// <param name="configService">The configuration service to retrieve database settings.</param>
-    public DapperConnectionFactory(ILogger logger, IConfigService configService)
+    public DatabaseConnectionFactory(ILogger logger, IConfigService configService)
     {
         this._logger = logger;
         this._configService = configService;
@@ -58,9 +58,9 @@ public class DapperConnectionFactory : IDapperDatabaseConnectionFactory
     public string ConnectionString => this._connectionString;
 
     /// <inheritdoc />
-    public IDapperDatabaseConnectionScope CreateScope()
+    public IDatabaseConnectionScope CreateScope()
     {
-        return new DapperConnectionScope(this._connectionString, this._databaseType);
+        return new DatabaseConnectionScope(this._connectionString, this._databaseType);
     }
 
     private void LoadSqliteDll()
@@ -70,10 +70,18 @@ public class DapperConnectionFactory : IDapperDatabaseConnectionFactory
             return;
         }
 
-        var dir = Cfx.API.GetResourcePath(Cfx.API.GetCurrentResourceName());
-        var path = Path.Combine(dir, "Libraries", "FivePD.Server", "runtimes", "win-x64", "native", "e_sqlite3.dll");
-        SqliteNativeLoader.ForceLoad(path);
-        Batteries_V2.Init();
+        try
+        {
+            var dir = Cfx.API.GetResourcePath(Cfx.API.GetCurrentResourceName());
+            var path = Path.Combine(dir, "Libraries", "FivePD.Server", "runtimes", "win-x64", "native", "e_sqlite3.dll");
+            SqliteNativeLoader.ForceLoad(path);
+            Batteries_V2.Init();
+        }
+        catch (Exception exception)
+        {
+            this._logger.Fatal("Could not initialize SQLite. {exception}", exception);
+            LifecycleHandler.Stop();
+        }
     }
 
     /// <summary>

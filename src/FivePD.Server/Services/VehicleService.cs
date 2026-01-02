@@ -31,7 +31,7 @@ public class VehicleService : IVehicleService, IOnInit
     private readonly INetworkEventService _networkEventService;
     private readonly PedDataRepository _pedDataRepository;
     private readonly VehicleDataRepository _vehicleDataRepository;
-    private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
+    private readonly IDatabaseConnectionFactory _dbConnectionFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VehicleService"/> class.
@@ -49,7 +49,7 @@ public class VehicleService : IVehicleService, IOnInit
         INetworkEventService networkEventService,
         PedDataRepository pedDataRepository,
         VehicleDataRepository vehicleDataRepository,
-        IDapperDatabaseConnectionFactory dbConnectionFactory)
+        IDatabaseConnectionFactory dbConnectionFactory)
     {
         this._vehicleStorageService = (IInternalVehicleStorageService)vehicleStorageService;
         this._pedStorageService = pedStorageService;

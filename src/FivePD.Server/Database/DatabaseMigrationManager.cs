@@ -19,7 +19,7 @@ namespace FivePD.Server.Database;
 /// </summary>
 public class DatabaseMigrationManager
 {
-    private readonly IDapperDatabaseConnectionFactory _dbConnectionFactory;
+    private readonly IDatabaseConnectionFactory _dbConnectionFactory;
     private readonly ILogger _logger;
     private readonly DatabaseType _databaseType;
 
@@ -28,9 +28,9 @@ public class DatabaseMigrationManager
     /// Manages automatic database schema creation, migrations, and migration-related operations such as
     /// retrieving applied migrations and reverting migrations.
     /// </summary>
-    /// <param name="dbConnectionFactory">The <see cref="IDapperDatabaseConnectionFactory"/> to use.</param>
+    /// <param name="dbConnectionFactory">The <see cref="IDatabaseConnectionFactory"/> to use.</param>
     /// <param name="logger">The <see cref="ILogger"/> to use.</param>
-    public DatabaseMigrationManager(IDapperDatabaseConnectionFactory dbConnectionFactory, ILogger logger, DatabaseType databaseType)
+    public DatabaseMigrationManager(IDatabaseConnectionFactory dbConnectionFactory, ILogger logger, DatabaseType databaseType)
     {
         this._dbConnectionFactory = dbConnectionFactory;
         this._logger = logger;

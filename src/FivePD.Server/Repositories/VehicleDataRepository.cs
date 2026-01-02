@@ -19,7 +19,7 @@ public class VehicleDataRepository : BaseRepository<VehicleData, VehicleDataUpda
     /// Initializes a new instance of the <see cref="VehicleDataRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public VehicleDataRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public VehicleDataRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.VehicleData)
     {
     }

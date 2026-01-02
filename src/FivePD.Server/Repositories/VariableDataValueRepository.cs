@@ -14,7 +14,7 @@ namespace FivePD.Server.Repositories;
 
 public class VariableDataValueRepository : BaseRepository<VariableDataValue, VariableDataValueUpdate, int>
 {
-    public VariableDataValueRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public VariableDataValueRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.VariableDataValues)
     {
     }

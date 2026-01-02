@@ -17,7 +17,7 @@ public class DivisionRepository : BaseRepository<Division, DivisionUpdate, int>
     /// Initializes a new instance of the <see cref="DivisionRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public DivisionRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public DivisionRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.Divisions)
     {
     }

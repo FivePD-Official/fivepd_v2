@@ -18,7 +18,7 @@ public class DepartmentRepository : BaseRepository<Department, DepartmentUpdate,
     /// Initializes a new instance of the <see cref="DepartmentRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public DepartmentRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public DepartmentRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.Departments)
     {
     }

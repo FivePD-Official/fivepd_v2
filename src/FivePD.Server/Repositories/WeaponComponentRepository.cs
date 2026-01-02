@@ -18,7 +18,7 @@ public class WeaponComponentRepository : BaseRepository<WeaponComponent, WeaponC
     /// Initializes a new instance of the <see cref="WeaponComponentRepository"/> class.
     /// </summary>
     /// <param name="dbConnectionFactory">The database connection factory.</param>
-    public WeaponComponentRepository(IDapperDatabaseConnectionFactory dbConnectionFactory)
+    public WeaponComponentRepository(IDatabaseConnectionFactory dbConnectionFactory)
         : base(dbConnectionFactory, TableNames.WeaponComponents)
     {
     }

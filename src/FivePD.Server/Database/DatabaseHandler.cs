@@ -15,11 +15,11 @@ namespace FivePD.Server.Database;
 /// Handles database operations and ensures the correct setup and migration of the database using Dapper.
 /// Replaces the EF Core DatabaseHandler.
 /// </summary>
-internal static class DapperDatabaseHandler
+internal static class DatabaseHandler
 {
     private static ServiceProvider _provider;
     private static ILogger _logger;
-    private static IDapperDatabaseConnectionFactory _dbConnectionFactory;
+    private static IDatabaseConnectionFactory _dbConnectionFactory;
     private static DatabaseMigrationManager _migrationManager;
     private static IConfigService _configService;
 
@@ -32,7 +32,7 @@ internal static class DapperDatabaseHandler
     {
         _provider = serviceProvider;
         _logger = logger;
-        _dbConnectionFactory = serviceProvider.GetService<IDapperDatabaseConnectionFactory>();
+        _dbConnectionFactory = serviceProvider.GetService<IDatabaseConnectionFactory>();
         _configService = serviceProvider.GetService<IConfigService>();
 
         if (_dbConnectionFactory is null)
