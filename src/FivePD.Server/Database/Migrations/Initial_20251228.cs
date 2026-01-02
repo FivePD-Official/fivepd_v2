@@ -223,7 +223,7 @@ public class CreateUsersTable_20251228 : IMigration
             .Column("DataType", x => x.Integer().NotNull())
             .Column("AddonId", x => x.Varchar(255).NotNull())
             .Column("Name", x => x.Varchar(255).NotNull())
-            .Column("Order", x => x.Integer().NotNull())
+            .Column("DisplayOrder", x => x.Integer().NotNull())
             .Column("Required", x => x.Boolean().NotNull().Default(0))
             .Column("Hidden", x => x.Boolean().NotNull().Default(0))
             .Column("Readonly", x => x.Boolean().NotNull().Default(0))

@@ -17,7 +17,7 @@ public interface IVariableDataService
     /// <typeparam name="TR">The type of the repository to register.</typeparam>
     public void RegisterAddonRepository<TS, TR>(TR repository)
         where TS : VariableDataSet
-        where TR : VariableDataRepository<TS>;
+        where TR : VariableDataBaseService<TS>;
 
     /// <summary>
     /// Registers attributes to the given dynamic data set type.
@@ -111,31 +111,28 @@ public interface IVariableDataService
     /// Finds and maps the first entity with the given id.
     /// </summary>
     /// <param name="id">The id of the entity.</param>
-    /// <param name="withTracking">Whether to track the entities or not.</param>
     /// <param name="queryCoreAttributeValue">Whether to query the core attribute values or not.</param>
     /// <returns>The first entity with the given id.</returns>
-    public VariableDataEntity GetEntity(string id, bool withTracking, bool queryCoreAttributeValue);
+    public VariableDataEntity GetEntity(string id, bool queryCoreAttributeValue);
 
     /// <summary>
     /// Finds and maps all entities of the given set.
     /// </summary>
     /// <typeparam name="TS">The type of the set which entities are needed.</typeparam>
-    /// <param name="withTracking">Whether to track the entities or not.</param>
     /// <param name="queryCoreAttributeValue">Whether to query the core attribute values or not.</param>
     /// <param name="filter">The filter to apply to the query.</param>
     /// <returns>All entities of the set.</returns>
-    public List<VariableDataEntity> GetEntities<TS>(bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
+    public List<VariableDataEntity> GetEntities<TS>(bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
         where TS : VariableDataSet;
 
     /// <summary>
     /// Finds and maps all entities of the given set.
     /// </summary>
     /// <param name="setType">The id of the set.</param>
-    /// <param name="withTracking">Whether to track the entities or not.</param>
     /// <param name="queryCoreAttributeValue">Whether to query the core attribute values or not.</param>
     /// <param name="filter">The filter to apply to the query.</param>
     /// <returns>All entities of the set.</returns>
-    public List<VariableDataEntity> GetEntities(Type setType, bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null);
+    public List<VariableDataEntity> GetEntities(Type setType, bool queryCoreAttributeValue, Dictionary<string, object> filter = null);
 }
 
 /// <summary>

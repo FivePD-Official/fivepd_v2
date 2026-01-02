@@ -6,7 +6,7 @@ using FivePD.Server.Models.VariableData.Sets;
 namespace FivePD.Server.Services.VariableData;
 
 /// <inheritdoc />
-public class PedTicketService : VariableDataRepository<PedTicketSet>
+public class PedTicketService : VariableDataBaseService<PedTicketSet>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="PedTicketService"/> class.

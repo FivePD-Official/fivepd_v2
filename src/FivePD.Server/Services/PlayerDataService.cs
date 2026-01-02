@@ -34,9 +34,7 @@ public class PlayerDataService : IPlayerDataService, IOnInit
     private readonly IConfigService _configService;
     private readonly ILogger _logger;
     private readonly ILocalizationService _localizationService;
-
     private readonly IPlayerHandlerService _playerHandlerService;
-
     private readonly IInternalPedStorageService _internalPedStorageService;
     private readonly INetworkEventService _networkEventService;
     private readonly UserRepository _userRepository;
@@ -349,15 +347,14 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         }
 
         var fPlayer = FPlayer.FromNetId(player.Handle);
-        // var unit = fPlayer.Unit;
+        var unit = fPlayer.Unit;
 
         var playerDetails = new PlayerDetailsDTO
         {
             NetworkId = player.Handle,
             User = user,
             DutyStatus = fPlayer.DutyStatus.Value,
-            // UnitCallsign = unit is null ? string.Empty : unit.Callsign,
-            UnitCallsign = null,
+            UnitCallsign = unit is null ? string.Empty : unit.Callsign,
         };
         this._networkEventService.TriggerEventSerialized(player, guid, playerDetails);
     }

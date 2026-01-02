@@ -18,6 +18,11 @@ public class VariableDataAttribute
     public int Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the associated <see cref="VariableDataSet"/>.
+    /// </summary>
+    public string SetId { get; set; }
+
+    /// <summary>
     /// Gets or sets which set this attribute belongs to.
     /// </summary>
     public VariableDataSet Set { get; set; }
@@ -42,7 +47,7 @@ public class VariableDataAttribute
     /// Gets or sets the order of this attribute.
     /// Used for overriding the default order of grid columns.
     /// </summary>
-    public int Order { get; set; }
+    public int DisplayOrder { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether this attribute is required in forms or not.

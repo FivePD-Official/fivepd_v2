@@ -231,6 +231,10 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<AssistanceServiceStationTypeConfigRepository>();
         services.AddSingleton<AssistanceServiceTypeConfigRepository>();
         services.AddSingleton<IncidentHistoryRepository>();
+        services.AddSingleton<VariableDataEntityRepository>();
+        services.AddSingleton<VariableDataAttributeRepository>();
+        services.AddSingleton<VariableDataValueRepository>();
+        services.AddSingleton<VariableDataSetRepository>();
 
         // Addons
         services.AddTransient<AddonLoggerService>();
@@ -248,21 +252,21 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<AddonMetadataService>());
 
         // Variable data repositories
-        // services.AddSingleton<ArrestReportService>();
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ArrestReportService>());
-        // services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<ArrestReportService>());
+        services.AddSingleton<ArrestReportService>();
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<ArrestReportService>());
+        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<ArrestReportService>());
 
-        // services.AddSingleton<IncidentReportService>();
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<IncidentReportService>());
-        // services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<IncidentReportService>());
+        services.AddSingleton<IncidentReportService>();
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<IncidentReportService>());
+        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<IncidentReportService>());
 
-        // services.AddSingleton<PedTicketService>();
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedTicketService>());
-        // services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedTicketService>());
+        services.AddSingleton<PedTicketService>();
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedTicketService>());
+        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedTicketService>());
 
-        // services.AddSingleton<PedWarningService>();
-        // services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedWarningService>());
-        // services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedWarningService>());
+        services.AddSingleton<PedWarningService>();
+        services.AddSingleton<IOnInit>(provider => provider.GetRequiredService<PedWarningService>());
+        services.AddSingleton<IOnDestroy>(provider => provider.GetRequiredService<PedWarningService>());
 
         // Other
         services.AddSingleton<FileHandlerService>();
@@ -326,9 +330,9 @@ internal class Bootstrapper : BaseScript
         services.AddSingleton<BackupManagerService>();
         services.AddSingleton<IBackupManagerService>(provider => provider.GetRequiredService<BackupManagerService>());
 
-        // services.AddSingleton<VariableDataService>();
-        // services.AddSingleton<IVariableDataService>(provider => provider.GetRequiredService<VariableDataService>());
-        // services.AddSingleton<IInternalVariableDataService>(provider => provider.GetRequiredService<VariableDataService>());
+        services.AddSingleton<VariableDataService>();
+        services.AddSingleton<IVariableDataService>(provider => provider.GetRequiredService<VariableDataService>());
+        services.AddSingleton<IInternalVariableDataService>(provider => provider.GetRequiredService<VariableDataService>());
 
         services.AddSingleton<ConfigService>();
         services.AddSingleton<IConfigService>(provider => provider.GetRequiredService<ConfigService>());

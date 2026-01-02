@@ -5,6 +5,7 @@ using CitizenFX.Core;
 using Dapper;
 using FivePD.Common.ConfigModels;
 using FivePD.Server.Models;
+using FivePD.Server.Models.VariableData;
 using Newtonsoft.Json;
 
 namespace FivePD.Server.Database;
@@ -27,6 +28,7 @@ public static class DapperTypeHandlers
         SqlMapper.AddTypeHandler(new ListVector3TypeHandler());
         SqlMapper.AddTypeHandler(new ListItemTypeHandler());
         SqlMapper.AddTypeHandler(new ListDrugTypeHandler());
+        SqlMapper.AddTypeHandler(new VariableDataAttributeAttributeOptionsTypeHandler());
     }
 
     /// <summary>
@@ -53,6 +55,36 @@ public static class DapperTypeHandlers
         }
 
         public override void SetValue(IDbDataParameter parameter, List<Vector3> value)
+        {
+            parameter.Value = value is null
+                ? DBNull.Value
+                : JsonConvert.SerializeObject(
+                    value,
+                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        }
+    }
+
+    private sealed class VariableDataAttributeAttributeOptionsTypeHandler : SqlMapper.TypeHandler<VariableDataAttribute.AttributeOptions>
+    {
+        public override VariableDataAttribute.AttributeOptions Parse(object value)
+        {
+            if (value == DBNull.Value)
+            {
+                return new VariableDataAttribute.AttributeOptions();
+            }
+
+            var json = value.ToString();
+            if (string.IsNullOrEmpty(json))
+            {
+                return new VariableDataAttribute.AttributeOptions();
+            }
+
+            return JsonConvert.DeserializeObject<VariableDataAttribute.AttributeOptions>(
+                json,
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        }
+
+        public override void SetValue(IDbDataParameter parameter, VariableDataAttribute.AttributeOptions value)
         {
             parameter.Value = value is null
                 ? DBNull.Value

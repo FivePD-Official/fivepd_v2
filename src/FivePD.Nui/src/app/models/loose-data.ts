@@ -6,7 +6,7 @@
 export interface VariableDataAttribute {
   Id: number;
   Name: string;
-  Order?: number;
+  DisplayOrder?: number;
   DataType: AttributeDataType;
   Required: boolean;
   Hidden?: boolean;

@@ -9,7 +9,7 @@ namespace FivePD.Server.Interfaces.VariableData;
 /// Responsible for managing loose data set entities.
 /// </summary>
 /// <typeparam name="TS">The type of the set to use.</typeparam>
-public abstract class VariableDataRepository<TS> : IOnInit, IOnDestroy
+public abstract class VariableDataBaseService<TS> : IOnInit, IOnDestroy
     where TS : VariableDataSet
 {
     private readonly IVariableDataService _variableDataService;
@@ -17,10 +17,10 @@ public abstract class VariableDataRepository<TS> : IOnInit, IOnDestroy
     private readonly List<IDisposable> _disposables = new();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="VariableDataRepository{TS}"/> class.
+    /// Initializes a new instance of the <see cref="VariableDataBaseService{TS}"/> class.
     /// </summary>
     /// <param name="variableDataService">The <see cref="IVariableDataService"/> to use.</param>
-    protected VariableDataRepository(IVariableDataService variableDataService)
+    protected VariableDataBaseService(IVariableDataService variableDataService)
     {
         this._variableDataService = variableDataService;
     }
@@ -100,24 +100,22 @@ public abstract class VariableDataRepository<TS> : IOnInit, IOnDestroy
     /// Gets an entity by its ID.
     /// </summary>
     /// <param name="id">The ID of the entity to get.</param>
-    /// <param name="withTracking">Whether to track the entities or not.</param>
     /// <param name="queryCoreAttributeValue">Whether to query the core attribute values or not.</param>
     /// <returns>The entity.</returns>
-    public VariableDataEntity Get(string id, bool withTracking, bool queryCoreAttributeValue)
+    public VariableDataEntity Get(string id, bool queryCoreAttributeValue)
     {
-        return this._variableDataService.GetEntity(id, withTracking, queryCoreAttributeValue);
+        return this._variableDataService.GetEntity(id, queryCoreAttributeValue);
     }
 
     /// <summary>
     /// Gets all entities.
     /// </summary>
-    /// <param name="withTracking">The id sof the withTracking.</param>
     /// <param name="queryCoreAttributeValue">The id sof the entity.</param>
     /// <param name="filter">The id of the entity.</param>
     /// <returns>The entities.</returns>
-    public List<VariableDataEntity> GetAll(bool withTracking, bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
+    public List<VariableDataEntity> GetAll(bool queryCoreAttributeValue, Dictionary<string, object> filter = null)
     {
-        return this._variableDataService.GetEntities<TS>(withTracking, queryCoreAttributeValue, filter);
+        return this._variableDataService.GetEntities<TS>(queryCoreAttributeValue, filter);
     }
 
     /// <summary>
