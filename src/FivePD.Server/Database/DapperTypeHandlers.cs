@@ -10,255 +10,35 @@ using Newtonsoft.Json;
 
 namespace FivePD.Server.Database;
 
+#pragma warning disable
+
 /// <summary>
 /// Custom Dapper type handlers for complex types.
 /// </summary>
 public static class DapperTypeHandlers
 {
-    /// <summary>
-    /// Registers all custom type handlers with Dapper.
-    /// </summary>
     public static void Register()
     {
-        SqlMapper.AddTypeHandler(new CallsignFormatTypeHandler());
-        SqlMapper.AddTypeHandler(new ListStringTypeHandler());
-        SqlMapper.AddTypeHandler(new ListIntTypeHandler());
-        SqlMapper.AddTypeHandler(new Vector3TypeHandler());
-        SqlMapper.AddTypeHandler(new RankPermissionsTypeHandler());
-        SqlMapper.AddTypeHandler(new ListVector3TypeHandler());
-        SqlMapper.AddTypeHandler(new ListItemTypeHandler());
-        SqlMapper.AddTypeHandler(new ListDrugTypeHandler());
-        SqlMapper.AddTypeHandler(new VariableDataAttributeAttributeOptionsTypeHandler());
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<List<CallsignFormatItem>>());
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<List<string>>());
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<List<int>>());
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<List<Vector3>>());
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<List<Item>>());
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<List<Drug>>());
+
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<Vector3>());
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<Rank.Permissions>());
+        SqlMapper.AddTypeHandler(new JsonTypeHandler<VariableDataAttribute.AttributeOptions>());
     }
 
-    /// <summary>
-    /// Type handler for processing and mapping List of Vector3 objects in database operations using Dapper.
-    /// </summary>
-    private sealed class ListVector3TypeHandler : SqlMapper.TypeHandler<List<Vector3>>
+    private class JsonTypeHandler<T> : SqlMapper.TypeHandler<T>
     {
-        public override List<Vector3> Parse(object value)
+        private readonly JsonSerializerSettings _settings = new()
         {
-            if (value == DBNull.Value)
-            {
-                return new List<Vector3>();
-            }
+            NullValueHandling = NullValueHandling.Ignore,
+        };
 
-            var json = value.ToString();
-            if (string.IsNullOrEmpty(json))
-            {
-                return new List<Vector3>();
-            }
-
-            return JsonConvert.DeserializeObject<List<Vector3>>(
-                json,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-
-        public override void SetValue(IDbDataParameter parameter, List<Vector3> value)
-        {
-            parameter.Value = value is null
-                ? DBNull.Value
-                : JsonConvert.SerializeObject(
-                    value,
-                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-    }
-
-    private sealed class VariableDataAttributeAttributeOptionsTypeHandler : SqlMapper.TypeHandler<VariableDataAttribute.AttributeOptions>
-    {
-        public override VariableDataAttribute.AttributeOptions Parse(object value)
-        {
-            if (value == DBNull.Value)
-            {
-                return new VariableDataAttribute.AttributeOptions();
-            }
-
-            var json = value.ToString();
-            if (string.IsNullOrEmpty(json))
-            {
-                return new VariableDataAttribute.AttributeOptions();
-            }
-
-            return JsonConvert.DeserializeObject<VariableDataAttribute.AttributeOptions>(
-                json,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-
-        public override void SetValue(IDbDataParameter parameter, VariableDataAttribute.AttributeOptions value)
-        {
-            parameter.Value = value is null
-                ? DBNull.Value
-                : JsonConvert.SerializeObject(
-                    value,
-                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-    }
-
-    private sealed class ListItemTypeHandler : SqlMapper.TypeHandler<List<Item>>
-    {
-        public override List<Item> Parse(object value)
-        {
-            if (value == DBNull.Value)
-            {
-                return new List<Item>();
-            }
-
-            var json = value.ToString();
-            if (string.IsNullOrEmpty(json))
-            {
-                return new List<Item>();
-            }
-
-            return JsonConvert.DeserializeObject<List<Item>>(
-                json,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-
-        public override void SetValue(IDbDataParameter parameter, List<Item> value)
-        {
-            parameter.Value = value is null
-                ? DBNull.Value
-                : JsonConvert.SerializeObject(
-                    value,
-                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-    }
-
-    private sealed class ListDrugTypeHandler : SqlMapper.TypeHandler<List<Drug>>
-    {
-        public override List<Drug> Parse(object value)
-        {
-            if (value == DBNull.Value)
-            {
-                return new List<Drug>();
-            }
-
-            var json = value.ToString();
-            if (string.IsNullOrEmpty(json))
-            {
-                return new List<Drug>();
-            }
-
-            return JsonConvert.DeserializeObject<List<Drug>>(
-                json,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-
-        public override void SetValue(IDbDataParameter parameter, List<Drug> value)
-        {
-            parameter.Value = value is null
-                ? DBNull.Value
-                : JsonConvert.SerializeObject(
-                    value,
-                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-    }
-
-    /// <summary>
-    /// Type handler for processing and mapping List of CallsignFormatItem objects in database operations using Dapper.
-    /// </summary>
-    private sealed class CallsignFormatTypeHandler : SqlMapper.TypeHandler<List<CallsignFormatItem>>
-    {
-        public override List<CallsignFormatItem> Parse(object value)
-        {
-            if (value == DBNull.Value)
-            {
-                return new List<CallsignFormatItem>();
-            }
-
-            var json = value.ToString();
-            if (string.IsNullOrEmpty(json))
-            {
-                return new List<CallsignFormatItem>();
-            }
-
-            return JsonConvert.DeserializeObject<List<CallsignFormatItem>>(
-                json,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-
-        public override void SetValue(IDbDataParameter parameter, List<CallsignFormatItem> value)
-        {
-            parameter.Value = value is null
-                ? DBNull.Value
-                : JsonConvert.SerializeObject(
-                    value,
-                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-    }
-
-    /// <summary>
-    /// Type handler for processing and mapping List of string objects in database operations using Dapper.
-    /// </summary>
-    private sealed class ListStringTypeHandler : SqlMapper.TypeHandler<List<string>>
-    {
-        public override List<string> Parse(object value)
-        {
-            if (value == DBNull.Value)
-            {
-                return new List<string>();
-            }
-
-            var json = value.ToString();
-            if (string.IsNullOrEmpty(json))
-            {
-                return new List<string>();
-            }
-
-            return JsonConvert.DeserializeObject<List<string>>(
-                json,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-
-        public override void SetValue(IDbDataParameter parameter, List<string> value)
-        {
-            parameter.Value = value is null
-                ? DBNull.Value
-                : JsonConvert.SerializeObject(
-                    value,
-                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-    }
-
-    /// <summary>
-    /// Type handler for processing and mapping List of int objects in database operations using Dapper.
-    /// </summary>
-    private sealed class ListIntTypeHandler : SqlMapper.TypeHandler<List<int>>
-    {
-        public override List<int> Parse(object value)
-        {
-            if (value == DBNull.Value)
-            {
-                return new List<int>();
-            }
-
-            var json = value.ToString();
-            if (string.IsNullOrEmpty(json))
-            {
-                return new List<int>();
-            }
-
-            return JsonConvert.DeserializeObject<List<int>>(
-                json,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-
-        public override void SetValue(IDbDataParameter parameter, List<int> value)
-        {
-            parameter.Value = value is null
-                ? DBNull.Value
-                : JsonConvert.SerializeObject(
-                    value,
-                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-    }
-
-    /// <summary>
-    /// Type handler for processing and mapping Vector3 objects in database operations using Dapper.
-    /// </summary>
-    private sealed class Vector3TypeHandler : SqlMapper.TypeHandler<Vector3>
-    {
-        public override Vector3 Parse(object value)
+        public override T Parse(object value)
         {
             if (value == DBNull.Value)
             {
@@ -266,54 +46,16 @@ public static class DapperTypeHandlers
             }
 
             var json = value.ToString();
-            if (string.IsNullOrEmpty(json))
-            {
-                return default;
-            }
-
-            return JsonConvert.DeserializeObject<Vector3>(
-                json,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            return string.IsNullOrEmpty(json)
+                ? default
+                : JsonConvert.DeserializeObject<T>(json, this._settings);
         }
 
-        public override void SetValue(IDbDataParameter parameter, Vector3 value)
+        public override void SetValue(IDbDataParameter parameter, T value)
         {
-            parameter.Value = JsonConvert.SerializeObject(
-                value,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-    }
-
-    /// <summary>
-    /// Custom Dapper type handler for serializing and deserializing <see cref="Rank.Permissions"/> objects to and from JSON format.
-    /// </summary>
-    private sealed class RankPermissionsTypeHandler : SqlMapper.TypeHandler<Rank.Permissions>
-    {
-        public override Rank.Permissions Parse(object value)
-        {
-            if (value == DBNull.Value)
-            {
-                return null;
-            }
-
-            var json = value.ToString();
-            if (string.IsNullOrEmpty(json))
-            {
-                return null;
-            }
-
-            return JsonConvert.DeserializeObject<Rank.Permissions>(
-                json,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-        }
-
-        public override void SetValue(IDbDataParameter parameter, Rank.Permissions value)
-        {
-            parameter.Value = value is null
+            parameter.Value = value == null
                 ? DBNull.Value
-                : JsonConvert.SerializeObject(
-                    value,
-                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                : JsonConvert.SerializeObject(value, this._settings);
         }
     }
 }
