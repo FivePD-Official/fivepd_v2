@@ -72,7 +72,7 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// Gets the player's User model.
     /// </summary>
     /// <returns>User.</returns>
-    public User User => ServiceLocator.GetService<IPlayerDataService>().FindUserByLicense(this.GetUnderlyingPlayer());
+    public User User => ServiceLocator.GetService<IPlayerHandlerService>().FindUserOfPlayer(this.GetUnderlyingPlayer());
 
     /// <summary>
     /// Gets the player's FPed.

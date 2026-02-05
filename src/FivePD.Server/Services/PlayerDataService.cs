@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -104,12 +104,6 @@ public class PlayerDataService : IPlayerDataService, IOnInit
         this._eventHandlerDictionary[Events.Player.GetDismissedWelcomeModal] += new Action<Player, string>(this.GetDismissedWelcomeModal);
         this._eventHandlerDictionary[Events.Player.DismissedWelcomeModal] += new Action<Player>(this.DismissedWelcomeModal);
         this._eventHandlerDictionary[Events.Player.GetRole] += new Action<Player, string>(this.GetRole);
-    }
-
-    /// <inheritdoc/>
-    public User FindUserByLicense(Player player, bool withChangeTracking = true)
-    {
-        return this._userRepository.FindByLicense(player);
     }
 
     /// <inheritdoc />

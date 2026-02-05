@@ -561,7 +561,7 @@ public class DepartmentService : IDepartmentService
             return;
         }
 
-        var user = this._playerDataService.FindUserByLicense(player, false);
+        var user = this._playerHandlerService.FindUserOfPlayer(player);
         this._userRepository.Update(user, x => { x.DepartmentId = department.Id; });
         if (department.DefaultRankId is not null)
         {
@@ -581,7 +581,7 @@ public class DepartmentService : IDepartmentService
             }
             while (departmentUsers.Any(x => x.Callsign == newCallsign));
 
-            user = this._playerDataService.FindUserByLicense(player);
+            user = this._playerHandlerService.FindUserOfPlayer(player);
             this._userRepository.Update(user, x => { x.Callsign = newCallsign; });
 
             var userCallsignFormat = this._userRepository.GetCallsignFormat(user);
@@ -615,7 +615,7 @@ public class DepartmentService : IDepartmentService
     [UIEvent(Events.UI.Department.Leave)]
     private void PlayerLeaveDepartmentFromNui([FromSource] Player player, string guid, string serializedRequest)
     {
-        var user = this._playerDataService.FindUserByLicense(player);
+        var user = this._playerHandlerService.FindUserOfPlayer(player);
         if (user is null || !user.DepartmentId.HasValue)
         {
             this._networkEventService.TriggerEventWithUnexpectedError(player, guid);
