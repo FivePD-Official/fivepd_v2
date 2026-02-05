@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,6 +9,7 @@ using FivePD.Common.Extensions;
 using FivePD.Server.Attributes;
 using FivePD.Server.Database;
 using FivePD.Server.Database.Sql;
+using FivePD.Server.EntityWrappers;
 using FivePD.Server.Interfaces;
 using FivePD.Server.Models;
 using FivePD.Server.Models.DTO;
@@ -610,6 +611,8 @@ public class DepartmentService : IDepartmentService
                 { "department", department!.Name },
             });
         this.PlayerJoinedDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
+        var fPlayer = FPlayer.FromPlayer(player);
+        fPlayer.ClearCache();
     }
 
     [UIEvent(Events.UI.Department.Leave)]
@@ -652,6 +655,8 @@ public class DepartmentService : IDepartmentService
                 { "department", department.Name },
             });
         this.PlayerLeftDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
+        var fPlayer = FPlayer.FromPlayer(player);
+        fPlayer.ClearCache();
     }
 
     [UIEvent(Events.UI.Department.RemoveUser)]
@@ -680,6 +685,13 @@ public class DepartmentService : IDepartmentService
         });
         this._networkEventService.TriggerEventWithResponse(player, guid, true, "Kick", "Kicking player");
         this.PlayerLeftDepartment?.Invoke(this, new PlayerDepartmentChangeEventArgs(user, department));
+
+        var playerOfUser = this._playerHandlerService.FindPlayerOfUser(user);
+        if (playerOfUser is not null)
+        {
+            var fPlayer = FPlayer.FromPlayer(playerOfUser);
+            fPlayer.ClearCache();
+        }
     }
 
     [UIEvent(Events.UI.Department.GetAllSimpleWithArea)]

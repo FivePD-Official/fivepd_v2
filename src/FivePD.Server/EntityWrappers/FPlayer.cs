@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -23,6 +23,11 @@ namespace FivePD.Server.EntityWrappers;
 public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
 {
     private static readonly List<FPlayer> CachedPlayers = new();
+    private readonly Dictionary<string, object> _cache = new();
+
+    private const string DepartmentCacheKey = "department";
+    private const string IsInDepartmentCacheKey = "isInDepartment";
+
     private List<Menu> _menus = new();
 
     /// <summary>
@@ -52,15 +57,20 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// <returns>A unit.</returns>
     public Department Department()
     {
-        var userRepository = ServiceLocator.GetService<UserRepository>();
-        return userRepository.GetDepartment(userRepository.FindByLicense(this.GetUnderlyingPlayer()));
+        return this.GetOrAddFromCache(
+            DepartmentCacheKey,
+            () =>
+            {
+                var userRepository = ServiceLocator.GetService<UserRepository>();
+                return userRepository.GetDepartment(userRepository.FindByLicense(this.GetUnderlyingPlayer()));
+            });
     }
 
     /// <summary>
     /// Gets a value indicating whether the player is in a department.
     /// </summary>
     /// <returns>Whether the player is in a department.</returns>
-    public bool IsInDepartment() => this.Department() is not null;
+    public bool IsInDepartment() => this.GetOrAddFromCache(IsInDepartmentCacheKey, () => this.Department() is not null);
 
     /// <summary>
     /// Gets the player's unit.
@@ -99,6 +109,14 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     /// Gets the player's observable with a value of the player's unit's callsign.
     /// </summary>
     internal FStateBagObservable<string> UnitCallsign { get; private set; }
+
+    /// <summary>
+    /// Clears the cached computed values for this player.
+    /// </summary>
+    public void ClearCache()
+    {
+        this._cache.Clear();
+    }
 
     /// <summary>
     /// Attempts to get the player with the specified netId.
@@ -163,6 +181,18 @@ public class FPlayer : IFStatefulContainer, IFPlayerWithMenus
     public StateBag GetStateBag()
     {
         return this.GetUnderlyingPlayer().State;
+    }
+
+    private T GetOrAddFromCache<T>(string key, Func<T> valueFactory)
+    {
+        if (this._cache.TryGetValue(key, out var cachedValue) && cachedValue is T typedValue)
+        {
+            return typedValue;
+        }
+
+        var value = valueFactory();
+        this._cache[key] = value!;
+        return value;
     }
 
     /// <summary>
