@@ -1,3 +1,8 @@
+# FivePD v2.0
+
+> Development has officially ceased.
+> This repository is maintained as an archive. The code is provided "as-is" for the community to fork and maintain independently. No further updates, support, or bug fixes will be provided.
+
 ## Development
 
 1. Navigate to the `/src/FivePD.Nui/` project/folder and execute `npm install` if the commands fails, do `npm install --force` instead
@@ -21,14 +26,11 @@ Alternatively, you can -- and should -- use one of the included Docker configura
 - Password root
 - Port: 3306 (MySQL) 3307 (MariaDB)
 
+### Database Infrastructure
 
-### Running Migrations
+The project uses **Dapper** as the micro-ORM for database interactions. Custom SQL queries are constructed using the internal `SqlBuilder` (see `src/FivePD.Server/Database/Sql/SqlBuilder.cs`).
 
-To create a migration, execute the following command from the `/src/` folder:
-
-```
-dotnet ef migrations add <MigrationName> --project .\FivePD.Server\FivePD.Server.csproj --startup-project .\FivePD.StartupProject\FivePD.StartupProject.csproj
-```
+Database schema migrations are handled via a custom implementation. To manage table structures, we use `TableBuilder`. An example of the current schema definition can be found in `src/FivePD.Server/Database/Migrations/Initial20251228.cs`.
 
 ## Localization
 
@@ -47,14 +49,3 @@ SINGULAR, PLURAL, TITLE, DESCRIPTION, HELP_LABEL
 
 It'll output the files to `FivePD.Statics/Localizations`.
 In case you need the new localization file to be loaded on the server just build the solution again.
-
-## Production
-
-1. Select the Release solution configuration
-1. Build the solution. Will output to `build-public`
-1. Run the `Build localization` configuration to generate the optimized localization file. Will output
-   to `FivePD.Statics/Localizations`.
-1. Run `npm run build` in the `FivePD.Nui` project. Will output to `FivePD.Nui/dist`
-1. Copy all files from `FivePD.Nui/dist/browser` to `build-public/Libraries/FivePD.Nui`
-1. In the `fxmanifest.lua` change the `ui_page` value to `Libraries/FivePD.Nui/index.html`
-1. Obfuscate!
