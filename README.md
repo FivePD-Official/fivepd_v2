@@ -3,6 +3,17 @@
 > Development has officially ceased.
 > This repository is maintained as an archive. The code is provided "as-is" for the community to fork and maintain independently. No further updates, support, or bug fixes will be provided.
 
+## Downloads
+
+### v2.0
+[https://drive.proton.me/urls/P75XQ2P3Q4#X6KjEU8HuXx0](https://drive.proton.me/urls/P75XQ2P3Q4#X6KjEU8HuXx0)
+
+### v1.5.2
+[https://drive.proton.me/urls/FGQEJD9BFG#XsI50bN7KAbx](https://drive.proton.me/urls/GQEJD9BFG#XsI50bN7KAbx)
+
+### v1.5.2 Compatlayer fix
+[https://drive.proton.me/urls/QTAY4PTD2G#VrfUSzKLgyoK](https://drive.proton.me/urls/QTAY4PTD2G#VrfUSzKLgyoK)
+
 ## Development
 
 1. Navigate to the `/src/FivePD.Nui/` project/folder and execute `npm install` if the commands fails, do `npm install --force` instead
