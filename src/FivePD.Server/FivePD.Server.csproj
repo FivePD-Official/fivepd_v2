@@ -108,4 +108,12 @@
         <Link>FivePD.Statics\eula.txt</Link>
       </Content>
     </ItemGroup>
+     <Target Name="CopyNativeSQLite" AfterTargets="Build">
+        <ItemGroup>
+            <NativeFiles Include="$(NuGetPackageRoot)sqlite\3.53.4\runtimes\win-x64\native\e_sqlite3.dll" />
+        </ItemGroup>
+        <Copy SourceFiles="@(NativeFiles)"
+              DestinationFolder="$(OutputPath)\runtimes\win-x64\native"
+              SkipUnchangedFiles="true" />
+    </Target>
 </Project>
